@@ -1,4 +1,4 @@
 package Minimarket.GlobalExpress_SpringBoot.dto;
-//Datos que llegan: usuario y contraseña.
+//Datos que llegan: Usuario y Contraseña
 public record LoginRequest(String username, String contrasena) {
 }

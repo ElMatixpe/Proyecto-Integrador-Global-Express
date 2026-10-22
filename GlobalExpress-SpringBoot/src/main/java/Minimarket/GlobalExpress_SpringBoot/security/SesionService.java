@@ -9,10 +9,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 
-/** Crea y guarda los tokens en memoria (duran 8 horas)
- * Guarda en memoria las sesiones iniciadas: token -> usuario.
+/* Crea y guarda los tokens en memoria (duran 8 horas)
+ * Guarda en memoria las sesiones iniciadas
  * Los tokens son aleatorios, duran 8 horas y se pierden si se reinicia el backend
- * en ese caso hay que volver a iniciar sesión*/
+ * en ese caso hay que volver a iniciar sesión */
 @Service
 public class SesionService {
 

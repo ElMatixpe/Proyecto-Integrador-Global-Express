@@ -1,5 +1,5 @@
 package Minimarket.GlobalExpress_SpringBoot.exception;
-//Error cuando las credenciales son incorrectas
+// Error cuando las credenciales son incorrectas.
 public class CredencialesInvalidasException extends RuntimeException {
 
     public CredencialesInvalidasException() {

@@ -4,7 +4,7 @@ import Minimarket.GlobalExpress_SpringBoot.model.Usuario;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-// Busca al usuario en la base de datos.
+//Busca al usuario en la base de datos
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
     Optional<Usuario> findByUsername(String username);

@@ -12,9 +12,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-/** Lee el token en cada petición e identifica al usuario.
- * Lee el encabezado "Authorization: Bearer <token>", busca la sesión y deja al usuario
- * identificado con su rol. El usuario se vuelve a leer de la base en cada petición, así que
+/** Lee el token en cada peticion e identifica al usuario.
+ * Lee el encabezado "Authorization: Bearer <token>", busca la sesion y deja al usuario
+ * identificado con su rol. El usuario se vuelve a leer de la base en cada peticion, asi que
  * si lo eliminan o le cambian el rol, el cambio se aplica de inmediato*/
 public class TokenAuthFilter extends OncePerRequestFilter {
 

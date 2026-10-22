@@ -1,4 +1,4 @@
-// Filtros de entrada: cada función recibe lo que escribió/pegó el usuario y
+// cada funcion recibe lo que escribio o pego el usuario y
 // devuelve el texto ya limpio, quitando los caracteres que no están permitidos.
 
 const LETRAS = 'A-Za-zÁÉÍÓÚÜÑáéíóúüñ';
@@ -11,7 +11,7 @@ export const soloNombre = (valor, max = 50) =>
     .replace(/\s{2,}/g, ' ')
     .slice(0, max);
 
-// Nombre de producto o marca: letras, números, espacios y . - & ' % /
+// Nombre de producto o marca con letras, números, espacios y con algunos caracteres especiales /
 export const textoProducto = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}0-9\\s.&'%/-]`, 'g'), '')
@@ -19,17 +19,17 @@ export const textoProducto = (valor, max = 50) =>
     .replace(/\s{2,}/g, ' ')
     .slice(0, max);
 
-// Nombre de usuario (login): letras sin tildes, números, punto, guion y guion bajo. Sin espacios.
+// Nombre de usuario (login) con letras sin tildes, numeros, punto, guion y guion bajo. Sin espacios.
 export const nombreUsuario = (valor, max = 20) =>
   valor.replace(/[^A-Za-z0-9._-]/g, '').slice(0, max);
 
-// Contraseña: sin espacios.
+// Contraseña sin espacios.
 export const sinEspacios = (valor) => valor.replace(/\s/g, '');
 
-// Solo dígitos (cantidades, IDs numéricos).
+// Solo digitos (cantidades, IDs numericos).
 export const soloEnteros = (valor, max = 6) => valor.replace(/\D/g, '').slice(0, max);
 
-// Precio: enteros o decimales con hasta 2 decimales (ej. 5, 5.5, 5.50). Sin letras ni signos.
+// Precios en enteros o decimales con hasta 2 decimales (ej. 5, 5.5, 5.50). Sin letras ni signos.
 export const soloDecimal = (valor, maxEnteros = 6) => {
   let limpio = valor.replace(',', '.').replace(/[^\d.]/g, '');
   const [entero, ...resto] = limpio.split('.');
@@ -38,6 +38,6 @@ export const soloDecimal = (valor, maxEnteros = 6) => {
   return limpio;
 };
 
-// Código de producto (ej. P001): letras sin tildes y números, en mayúsculas.
+// Codigo de producto (ej. P001): letras sin tildes y numeros, en mayusculas.
 export const codigoProducto = (valor, max = 10) =>
   valor.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, max);

@@ -38,13 +38,13 @@ public class UsuarioService {
         if (usuarioRepository.existsByUsername(datos.getUsername().trim())) {
             throw new IllegalArgumentException("Ya existe un usuario con ese nombre de usuario.");
         }
-        // patron factory: la fabrica crea el tipo de usuario según el rol
+        // patron factory: la fabrica crea el tipo de usuario segun el rol
         Usuario nuevo = usuarioFactory.crearUsuario(
                 datos.getRol(), datos.getNombre().trim(), datos.getUsername().trim(), datos.getContrasena());
         return usuarioRepository.save(nuevo);
     }
 
-    /** Si la contraseña llega vacía se conserva la actual. */
+    /** Si la contraseña llega vacia se conserva la actual. */
     @Transactional
     public Usuario actualizar(Integer id, Usuario datos) {
         validarDatos(datos);
@@ -72,7 +72,7 @@ public class UsuarioService {
         usuarioRepository.delete(obtener(id));
     }
 
-    /** Valida las credenciales del Login. Devuelve el usuario. */
+    /* Valida las credenciales del Login. Devuelve el usuario. */
     @Transactional(readOnly = true)
     public Usuario autenticar(String username, String contrasena) {
         if (username == null || contrasena == null) {
@@ -96,7 +96,7 @@ public class UsuarioService {
         usuarioFactory.crearPerfil(u.getRol()); // valida el rol: error si no es Administrador o Cajero
     }
 
-    // Mismas reglas que el React: 8 a 12 caracteres, mayúscula, minúscula, número y símbolo.
+    // validacion: 8 a 12 caracteres, mayúscula, minúscula, número y símbolo.
     private void validarContrasena(String c) {
         if (c == null || c.length() < 8 || c.length() > 12) {
             throw new IllegalArgumentException("La contraseña debe tener entre 8 y 12 caracteres.");

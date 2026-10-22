@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-/** Convierte los errores en JSON {"mensaje": ...}. Que react lo puede mostrar */
+/* Convierte los errores en JSON {"mensaje": ...}, para que react lo pueda mostrar */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         return responder(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    // Por ejemplo: borrar un producto o usuario que ya está en ventas (FK RESTRICT)
+    // Por ejemplo: borrar un producto o usuario que ya esta en ventas (FK RESTRICT)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> integridad(DataIntegrityViolationException e) {
         return responder(HttpStatus.CONFLICT,

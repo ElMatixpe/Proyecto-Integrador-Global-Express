@@ -1,4 +1,4 @@
-// Punto único de comunicación con el backend Spring Boot
+// Punto de comunicación con el backend Spring Boot
 export const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8080/api';
 
 export class ErrorApi extends Error {
@@ -8,13 +8,13 @@ export class ErrorApi extends Error {
   }
 }
 
-// Token de sesión que entrega el login. Vive solo en memoria: al recargar la página hay que volver a entrar.
+// Token de sesion que entrega el login. Vive solo en memoria: al recargar la pagina hay que volver a entrar.
 let token = null;
 export const guardarToken = (nuevo) => {
   token = nuevo;
 };
 
-// App.js registra aquí qué hacer cuando el servidor dice que la sesión ya no es valida
+// App.js registra aqui que hacer cuando el servidor dice que la sesion ya no es valida
 let alExpirarSesion = null;
 export const registrarAlExpirarSesion = (funcion) => {
   alExpirarSesion = funcion;

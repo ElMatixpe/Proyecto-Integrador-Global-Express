@@ -49,14 +49,14 @@ public class UsuarioController {
         usuarioService.eliminar(id);
     }
 
-    /** Login del React: devuelve { token, usuario } (sin contraseña) o error 401 */
+    /** Login del React devuelve { token, usuario } (sin contraseña) o error 401 */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest credenciales) {
         Usuario usuario = usuarioService.autenticar(credenciales.username(), credenciales.contrasena());
         return new LoginResponse(sesionService.crear(usuario.getIdUsuario()), usuario);
     }
 
-    /** Cierra la sesión: el token deja de servir. */
+    /** Cierra la sesion y el token deja de servir. */
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(Authentication autenticacion) {

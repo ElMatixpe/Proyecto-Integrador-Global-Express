@@ -1,8 +1,8 @@
 export const LONGITUD_MIN_CONTRASENA = 8;
 export const LONGITUD_MAX_CONTRASENA = 12;
 
-// Reglas de la contraseña: mínimo 8 posiciones, máximo 12, 1 mayúscula,
-// 1 minúscula, 1 dígito y 1 símbolo especial. 
+// minimo 8 posiciones, maximo 12, 1 mayuscula,
+// 1 minuscula, 1 digito y 1 simbolo especial. 
 export function validarFormatoContrasena(valor) {
   if (valor.length < LONGITUD_MIN_CONTRASENA) 
     return `La contraseña debe tener al menos ${LONGITUD_MIN_CONTRASENA} caracteres.`;
