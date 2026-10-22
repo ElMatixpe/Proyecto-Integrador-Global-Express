@@ -5,7 +5,7 @@
   font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-/* Barra superior: Historial / Nueva venta */
+/* Barra superior: historial o nueva venta */
 .ventas-toolbar {
   display: flex;
   gap: 0.9rem;
@@ -387,7 +387,7 @@
   margin-top: 1rem;
 }
 
-/* Éxito */
+/* Exito */
 .ventas-exito {
   display: flex;
   flex-direction: column;
@@ -431,7 +431,7 @@
 
 .ventas-btn-peligro:hover { background-color: #c01818; }
 
-/* Errores de conexión y botones en espera */
+/* Errores de conexion y botones en espera */
 .ventas-banner-error {
   display: flex;
   align-items: center;
@@ -548,7 +548,7 @@
 
 .ventas-detalle-total strong { font-size: 1.3rem; }
 
-/* Eliminación física (solo Administrador) */
+/* Eliminacion fisica (solo Administrador) */
 .ventas-btn-eliminar {
   background: #7a0f0f;
   color: #fff;

@@ -1,8 +1,8 @@
 import { peticion } from './api';
 import { codigoDeProducto } from './productosApi';
 
-// En la base de datos la venta tiene un id numérico (id_venta).
-// En pantalla se muestra como código: 4 -> V0004.
+// En la base de datos la venta tiene un id numérico (id_venta)
+// En pantalla se muestra como codigo: V0004.
 export const codigoDeVenta = (id) => `V${String(id).padStart(4, '0')}`;
 
 const formatearFecha = (iso) => {

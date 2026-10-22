@@ -21,7 +21,7 @@ public class VentaController {
         this.ventaService = ventaService;
     }
 
-    /** GET /api/ventas  |  GET /api/ventas?estado=Pagado  |  GET /api/ventas?estado=Cancelado */
+    /* GET /api/ventas | GET /api/ventas?estado=Pagado | GET /api/ventas?estado=Cancelado */
     @GetMapping
     public List<VentaHistorialDto> listar(@RequestParam(required = false) String estado) {
         return ventaService.listar(estado);
@@ -37,13 +37,13 @@ public class VentaController {
         return ventaService.detalles(id);
     }
 
-    /** Eliminación logica: PUT /api/ventas/{id}/cancelar (Administrador y Cajero) */
+    /* Eliminación logica: PUT /api/ventas/{id}/cancelar (Administrador y Cajero) */
     @PutMapping("/{id}/cancelar")
     public VentaHistorialDto cancelar(@PathVariable Integer id) {
         return ventaService.cancelar(id);
     }
 
-    /** Eliminación fisica: DELETE /api/ventas/{id} (solo Administrador, solo ventas canceladas) */
+    /* Eliminación fisica: DELETE /api/ventas/{id} (solo Administrador y solo ventas canceladas) */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer id) {

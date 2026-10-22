@@ -2,7 +2,6 @@ import './Modales.css';
 
 function Modal({ titulo, onCerrar, ancho, children }) {
   const detenerPropagacion = (e) => e.stopPropagation();
-
   return (
     <div className="modal-fondo" onClick={onCerrar}>
       <div

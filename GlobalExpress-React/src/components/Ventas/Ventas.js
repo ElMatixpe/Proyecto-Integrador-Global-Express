@@ -45,9 +45,9 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const [ventaExitosa, setVentaExitosa] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
+  const [voucherVenta, setVoucherVenta] = useState(null); 
 
-  //Cancelar una venta ya registrada (eliminación lógica) 
+  //Cancelar una venta ya registrada (eliminación logica) 
   const [ventaPorCancelar, setVentaPorCancelar] = useState(null);
   const [errorCancelacion, setErrorCancelacion] = useState('');
 
@@ -172,7 +172,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const seguirConVenta = () => setModalCancelar(false);
 
   // Envía la venta al backend (POST /api/ventas). El servidor toma los precios de la
-  // base de datos, calcula el total y guarda la venta con su detalle.
+  // base de datos, calcula el total y guarda la venta con su detalle
   const enviarVenta = async (estado) => {
     const creada = await peticion('/ventas', {
       metodo: 'POST',

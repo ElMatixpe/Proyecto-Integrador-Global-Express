@@ -26,7 +26,6 @@ function Sidebar({ activo, rol, onSeleccionar, onCerrarSesion }) {
             <div className="sidebar-marca-subtitulo">Minimarket</div>
           </div>
         </div>
-
         <nav className="sidebar-menu">
           {itemsVisibles.map(({ key, label, icon: Icon }) => (
             <button
@@ -41,7 +40,6 @@ function Sidebar({ activo, rol, onSeleccionar, onCerrarSesion }) {
           ))}
         </nav>
       </div>
-
       <button className="sidebar-cerrar-sesion" onClick={onCerrarSesion} type="button">
         <LogoutIcon size={19} />
         <span>Cerrar Sesión</span>

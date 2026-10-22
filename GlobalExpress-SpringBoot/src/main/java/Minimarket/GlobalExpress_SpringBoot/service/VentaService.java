@@ -28,7 +28,6 @@ public class VentaService {
     private static final Set<String> METODOS_PAGO = Set.of("Efectivo", "Tarjeta", "Yape", "Plin");
     private static final String PAGADO = "Pagado";
     private static final String CANCELADO = "Cancelado";
-
     private final VentaRepository ventaRepository;
     private final DetalleVentaRepository detalleRepository;
     private final ProductoRepository productoRepository;
@@ -47,7 +46,7 @@ public class VentaService {
         this.reporteRepository = reporteRepository;
     }
 
-    /** Historial. estado = "Pagado", "Cancelado" o null/vacío para todas. */
+    /* Historial. estado = "Pagado", "Cancelado" o null/vacio para todas. */
     @Transactional(readOnly = true)
     public List<VentaHistorialDto> listar(String estado) {
         if (estado == null || estado.isBlank()) {
@@ -68,9 +67,8 @@ public class VentaService {
         return detalleRepository.consultarDetalle(idVenta);
     }
 
-    /**
-     * Eliminacion logica: cancela una venta ya registrada. El registro NO se borra: cambia su
-     * estado de "Pagado" a "Cancelado", sigue en el historial y deja de contar como ingreso. */
+    /**Eliminacion logica: cancela una venta ya registrada. El registro NO se borra: cambia su
+     * estado de "Pagado" a "Cancelado", sigue en el historial y deja de contar como ingreso */
     @Transactional
     public VentaHistorialDto cancelar(Integer id) {
         Venta venta = obtener(id);
@@ -89,10 +87,9 @@ public class VentaService {
                 guardada.getUsuario().getNombre());
     }
 
-    /**
-     * eliminacion fisica: borra para siempre una venta CANCELADA y todas sus líneas de detalle.
-     * No se puede deshacer. Una venta Pagada nunca se borra (primero hay que cancelarla).
-     * Los reportes que mencionaban la venta no se borran: solo quedan sin venta asociada. */
+    /** eliminacion fisica: borra para siempre una venta CANCELADA y todas sus líneas de detalle.
+     * No se puede deshacer. Una venta Pagada nunca se borra
+     * Los reportes que mencionaban la venta no se borran, solo quedan sin venta asociada. */
     @Transactional
     public void eliminarFisicamente(Integer id) {
         Venta venta = obtener(id);
@@ -105,9 +102,8 @@ public class VentaService {
         ventaRepository.delete(venta);
     }
 
-    /**
-     * Registra una venta Pagada (Confirmar Venta) o Cancelada (Cancelar con confirmación).
-     * Los precios salen de la tabla producto y el total se calcula aquí, no en el cliente.     */
+    /**Registra una venta Pagada (Confirmar Venta) o Cancelada (Cancelar con confirmacion).
+     * Los precios salen de la tabla producto y el total se calcula aqui, no en el cliente.     */
     @Transactional
     public Venta registrar(VentaRequest req) {
         if (req == null || req.idUsuario() == null) {

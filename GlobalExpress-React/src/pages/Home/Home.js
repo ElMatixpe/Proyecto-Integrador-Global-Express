@@ -14,10 +14,10 @@ import './Home.css';
 
 function Home({ usuario, onCerrarSesion }) {
   const [seccionActiva, setSeccionActiva] = useState('inicio');
-  const [productos, setProductos] = useState([]); // viene del backend (MySQL)
+  const [productos, setProductos] = useState([]); 
   const [cargandoProductos, setCargandoProductos] = useState(true);
   const [errorProductos, setErrorProductos] = useState('');
-  const [ventas, setVentas] = useState([]); // viene del backend (MySQL)
+  const [ventas, setVentas] = useState([]); 
   const [cargandoVentas, setCargandoVentas] = useState(true);
   const [errorVentas, setErrorVentas] = useState('');
 

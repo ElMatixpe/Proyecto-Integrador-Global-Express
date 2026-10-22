@@ -16,7 +16,7 @@ public class Venta {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
-    // El vendedor (sin contraseña, ver Usuario)
+    // El vendedor (Usuario)
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;

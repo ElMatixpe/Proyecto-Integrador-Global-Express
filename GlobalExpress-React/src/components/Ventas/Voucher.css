@@ -1,4 +1,4 @@
-/* ---------- Documento (vista previa e impresión) ---------- */
+/* Documento (vista previa e impresion) */
 .voucher-doc {
   background: #fff;
   color: #1a1a1a;
@@ -116,7 +116,7 @@
   .voucher-datos { grid-template-columns: 1fr; }
 }
 
-/* ---------- Impresión: solo el voucher, en una hoja A4 ---------- */
+/* Impresion: solo el voucher, en una hoja A4 */
 .voucher-print { display: none; }
 
 @page { size: A4; margin: 15mm; }

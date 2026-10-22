@@ -13,13 +13,13 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Inte
 
     List<DetalleVenta> findByVentaIdVenta(Integer idVenta);
 
-    // Borrado fisico de las líneas de una venta 
+    // Borrado fisico de las lineas de una venta 
     @Modifying
     @Query("DELETE FROM DetalleVenta d WHERE d.venta.idVenta = :idVenta")
     int eliminarPorVenta(@Param("idVenta") Integer idVenta);
 
     /**
-     * CONSULTA 2: detalle_venta + producto (JOIN). */
+     * CONSULTA 2: detalle_venta + producto */
     @Query("""
             SELECT new Minimarket.GlobalExpress_SpringBoot.dto.DetalleVentaDto(
                 d.idDetalle, d.cantidad, d.precioUnitario, d.subtotal,
@@ -30,7 +30,7 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Inte
             """)
     List<DetalleVentaDto> consultarDetalle(@Param("idVenta") Integer idVenta);
 
-    // Detalles de todas las ventas de un período (fecha de la venta >= inicio y < fin)
+    // Detalles de todas las ventas de un periodo (fecha de la venta >= inicio y < fin)
     List<DetalleVenta> findByVentaFechaGreaterThanEqualAndVentaFechaLessThan(
             LocalDateTime inicio, LocalDateTime fin);
 }

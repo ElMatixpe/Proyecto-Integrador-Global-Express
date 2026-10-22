@@ -2,11 +2,9 @@ package Minimarket.GlobalExpress_SpringBoot.dto;
 
 import java.util.List;
 
-/**
- * Lo que envía el React al confirmar (o cancelar) una venta.
+/**Lo que envia el React al confirmar (o cancelar) una venta.
  * El precio, subtotales, total y fecha los calcula el servidor.
- * estado: "Pagado" (por defecto) o "Cancelado".
- */
+ * estado: Pagado o Cancelado */
 public record VentaRequest(
         Integer idUsuario,
         String cliente,

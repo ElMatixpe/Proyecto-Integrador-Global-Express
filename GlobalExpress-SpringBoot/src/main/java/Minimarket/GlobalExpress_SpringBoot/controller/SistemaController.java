@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Endpoint de comprobación del patrón Singleton sobre la conexión a la base de datos. */
+/* Endpoint del patron Singleton sobre la conexion a la base de datos. */
 @RestController
 @RequestMapping("/api/sistema")
 public class SistemaController {
 
     private final ConexionBD conexionBD;
-    private final DataSource dataSource; // el mismo que usan JPA y los repositorios
+    private final DataSource dataSource; 
     private final UsuarioFactory usuarioFactory;
 
     public SistemaController(ConexionBD conexionBD, DataSource dataSource, UsuarioFactory usuarioFactory) {
@@ -26,12 +26,10 @@ public class SistemaController {
         this.usuarioFactory = usuarioFactory;
     }
 
-    /**
-     * GET /api/sistema/conexion
+    /** GET /api/sistema/conexion
      * Si llamas varias veces, "instanciaConexionBD" y "instanciaDataSource" no cambian:
      * es siempre el mismo objeto compartido. "mismoDataSource" = true confirma que
-     * ConexionBD y el resto del sistema usan el mismo pool.
-     */
+     * ConexionBD y el resto del sistema usan el mismo pool*/
     @GetMapping("/conexion")
     public Map<String, Object> conexion() {
         Map<String, Object> info = new LinkedHashMap<>();
@@ -44,11 +42,9 @@ public class SistemaController {
         return info;
     }
 
-    /**
-     * GET /api/sistema/perfil/Administrador  |  /api/sistema/perfil/Cajero
-     * Comprueba el patrón Factory: la fábrica devuelve una clase distinta según el rol.
-     * Con un rol inexistente responde 400.
-     */
+    /* GET /api/sistema/perfil/Administrador | /api/sistema/perfil/Cajero
+     * Comprueba el patron Factory: la fabrica devuelve una clase distinta segun el rol.
+     * Con un rol inexistente responde 400. */
     @GetMapping("/perfil/{rol}")
     public Map<String, Object> perfil(@PathVariable String rol) {
         PerfilUsuario perfil = usuarioFactory.crearPerfil(rol);

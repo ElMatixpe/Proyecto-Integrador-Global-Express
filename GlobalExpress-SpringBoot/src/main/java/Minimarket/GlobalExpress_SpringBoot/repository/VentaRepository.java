@@ -27,13 +27,13 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
             """)
     List<VentaHistorialDto> consultarHistorialPorEstado(@Param("estado") String estado);
 
-    // Historial: las más recientes primero
+    // Historial lista muestra las mas recientes primero
     List<Venta> findAllByOrderByIdVentaDesc();
 
-    // Historial filtrado por estado ("Pagado" o "Cancelado")
+    // Historial filtrado por estado (Pagado o Cancelado)
     List<Venta> findByEstadoOrderByIdVentaDesc(String estado);
 
-    // Ventas de un período: fecha >= inicio y fecha < fin
+    // Ventas de un periodo: fecha >= inicio y fecha < fin
     List<Venta> findByFechaGreaterThanEqualAndFechaLessThanOrderByFechaAsc(
             LocalDateTime inicio, LocalDateTime fin);
 }
