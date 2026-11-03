@@ -8,7 +8,6 @@ import './Productos.css';
 
 const PRODUCTO_VACIO = { nombre: '', marca: '', estado: 'Disponible', precio: '' };
 
-// El listado de productos vive en Home para compartirlo con el módulo de Ventas.
 function Productos({
   productos,
   setProductos,
@@ -19,6 +18,7 @@ function Productos({
 }) {
   const columnas = puedeGestionar ? 6 : 5;
   const [busqueda, setBusqueda] = useState('');
+
   const [modalAbierto, setModalAbierto] = useState(false);
   const [productoEditar, setProductoEditar] = useState(null); 
   const [form, setForm] = useState(PRODUCTO_VACIO);
@@ -263,3 +263,4 @@ function Productos({
 }
 
 export default Productos;
+

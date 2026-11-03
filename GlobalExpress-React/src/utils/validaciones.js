@@ -1,6 +1,5 @@
 // cada funcion recibe lo que escribio o pego el usuario y
 // devuelve el texto ya limpio, quitando los caracteres que no están permitidos.
-
 const LETRAS = 'A-Za-zÁÉÍÓÚÜÑáéíóúüñ';
 
 // Solo letras (con tildes y ñ), espacios, punto y guion. Sin números.

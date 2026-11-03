@@ -8,7 +8,8 @@ import { desdeApiVenta, listarDetallesVenta } from '../../services/ventasApi';
 import { puedeEliminarVentas } from '../../utils/permisos';
 import './Ventas.css';
 
-const METODOS_PAGO = ['Efectivo', 'Tarjeta', 'Yape', 'Plin'];
+// solo pago en efectivo 
+const METODOS_PAGO = ['Efectivo'];
 
 const FILTROS = [
   { key: 'exito', label: 'Con Éxito' },
@@ -19,9 +20,9 @@ const FILTROS = [
 const moneda = (n) => `S/ ${Number(n).toFixed(2)}`;
 
 function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, onReintentar }) {
-  const [vista, setVista] = useState('historial'); 
+  const [vista, setVista] = useState('historial'); // 'historial' | 'nueva'
 
-  //Historial 
+  // Historial 
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState('exito');
 
@@ -36,18 +37,18 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       });
   }, [ventas, busqueda, filtro]);
 
-  //Nueva venta
+  // Nueva venta 
   const [cliente, setCliente] = useState('');
-  const [metodoPago, setMetodoPago] = useState('Tarjeta');
+  const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [carrito, setCarrito] = useState([]);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [error, setError] = useState('');
   const [ventaExitosa, setVentaExitosa] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [voucherVenta, setVoucherVenta] = useState(null); 
+  const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
 
-  //Cancelar una venta ya registrada (eliminación logica) 
+  // Cancelar una venta ya registrada (eliminación lógica) 
   const [ventaPorCancelar, setVentaPorCancelar] = useState(null);
   const [errorCancelacion, setErrorCancelacion] = useState('');
 
@@ -75,7 +76,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  //Eliminar una venta cancelada de forma permanente (solo Administrador)
+  // Eliminar una venta cancelada de forma permanente (eliminación física, solo Administrador) 
   const [ventaPorEliminar, setVentaPorEliminar] = useState(null);
   const [confirmacionTexto, setConfirmacionTexto] = useState('');
   const [errorEliminacion, setErrorEliminacion] = useState('');
@@ -91,7 +92,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     if (!guardando) setVentaPorEliminar(null);
   };
 
-  // DELETE /api/ventas/{id}: borra la venta y su detalle de la base de datos. 
+  // DELETE /api/ventas/{id}: borra la venta y su detalle de la base de datos. No se puede deshacer.
   const eliminarDefinitivo = async () => {
     setGuardando(true);
     setErrorEliminacion('');
@@ -109,7 +110,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  //Detalle de una venta 
+  // Detalle de una venta 
   const [ventaDetalle, setVentaDetalle] = useState(null);
   const [detalles, setDetalles] = useState([]);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
@@ -129,7 +130,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  //Modal agregar producto
+  // Modal agregar producto 
   const [modalProductos, setModalProductos] = useState(false);
   const [busquedaProd, setBusquedaProd] = useState('');
   const [cantidades, setCantidades] = useState({}); // { P001: 2 }
@@ -144,7 +145,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
 
   const limpiarNuevaVenta = () => {
     setCliente('');
-    setMetodoPago('Tarjeta');
+    setMetodoPago('Efectivo');
     setCarrito([]);
     setModoEdicion(false);
     setError('');
@@ -158,7 +159,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     setVista('historial');
   };
 
-  //Si ya hay productos en el carrito se pide confirmación; si no, simplemente se sale.
+  // Si ya hay productos en el carrito se pide confirmación; si no, simplemente se sale.
   const cancelarVenta = () => {
     if (carrito.length === 0) {
       limpiarNuevaVenta();
@@ -172,7 +173,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const seguirConVenta = () => setModalCancelar(false);
 
   // Envía la venta al backend (POST /api/ventas). El servidor toma los precios de la
-  // base de datos, calcula el total y guarda la venta con su detalle
+  // base de datos, calcula el total y guarda la venta con su detalle.
   const enviarVenta = async (estado) => {
     const creada = await peticion('/ventas', {
       metodo: 'POST',
@@ -343,17 +344,17 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
             </div>
           )}
 
-          <div className="ventas-table-container">
+          <div className="ventas-table-container ventas-tabla-scroll">
             <table className="ventas-table">
               <thead>
                 <tr>
-                  <th>Codigo<small>venta</small></th>
-                  <th>Fecha<small>venta</small></th>
-                  <th>Cliente<small>venta</small></th>
-                  <th>Vendedor<small>usuario</small></th>
-                  <th>Metodo de Pago<small>venta</small></th>
-                  <th>Total<small>venta</small></th>
-                  <th>Estado<small>venta</small></th>
+                  <th>Codigo</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Vendedor</th>
+                  <th>Metodo de Pago</th>
+                  <th>Total</th>
+                  <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -456,12 +457,12 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 <table className="ventas-table">
                   <thead>
                     <tr>
-                      <th>Código<small>producto</small></th>
-                      <th>Producto<small>producto</small></th>
-                      <th>Marca<small>producto</small></th>
-                      <th>Cantidad<small>detalle_venta</small></th>
-                      <th>Precio unit.<small>detalle_venta</small></th>
-                      <th>Subtotal<small>detalle_venta</small></th>
+                      <th>Código</th>
+                      <th>Producto</th>
+                      <th>Marca</th>
+                      <th>Cantidad</th>
+                      <th>Precio unit.</th>
+                      <th>Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>

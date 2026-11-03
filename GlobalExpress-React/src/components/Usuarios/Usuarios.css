@@ -45,7 +45,16 @@
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 10px;
-  overflow: visible;
+  max-height: 60vh;
+  overflow: auto;
+}
+
+/* La cabecera queda fija al desplazarse */
+.users-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #eedf3a;
 }
 
 .users-table {
@@ -118,7 +127,6 @@
   color: #888;
 }
 
-/* Columna de acciones (3 puntos + menú) */
 .users-col-acciones {
   width: 90px;
   text-align: center;
@@ -157,9 +165,7 @@
 }
 
 .users-menu {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
+  position: fixed; 
   min-width: 140px;
   background: #fff;
   border: 1px solid #e5e5e5;
@@ -169,12 +175,6 @@
   z-index: 950;
   display: flex;
   flex-direction: column;
-}
-
-/* La última fila abre el menú hacia arriba para que no quede tapado */
-.users-menu-arriba {
-  top: auto;
-  bottom: calc(100% + 4px);
 }
 
 .users-menu-item {
@@ -199,7 +199,7 @@
   background-color: #fdecea;
 }
 
-/* Formularios y botones de los dialogs */
+/* Formularios y botones */
 .users-form {
   display: flex;
   flex-direction: column;

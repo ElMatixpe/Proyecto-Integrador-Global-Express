@@ -267,10 +267,20 @@
 }
 
 @media print {
-  body[data-imprimir="reporte"] * { visibility: hidden; }
+
+  @page {
+    size: A4 portrait;
+    margin: 15mm;
+  }
+
+  body[data-imprimir="reporte"] * {
+    visibility: hidden;
+  }
 
   body[data-imprimir="reporte"] .reportes-pdf,
-  body[data-imprimir="reporte"] .reportes-pdf * { visibility: visible; }
+  body[data-imprimir="reporte"] .reportes-pdf * {
+    visibility: visible;
+  }
 
   body[data-imprimir="reporte"] .reportes-pdf {
     position: absolute;
@@ -279,10 +289,48 @@
     width: 100%;
     border: none;
     padding: 0;
+    margin: 0;
+    box-shadow: none;
+    font-size: 10px;
+  }
+
+  body[data-imprimir="reporte"] .reportes-pdf-meta {
+    margin-bottom: 8px;
+    font-size: 9px;
+  }
+
+  body[data-imprimir="reporte"] .reportes-pdf-empresa {
+    font-size: 13px;
+  }
+
+  body[data-imprimir="reporte"] .reportes-pdf-tipo {
+    font-size: 11px;
+  }
+
+  body[data-imprimir="reporte"] .reportes-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
   }
 
   body[data-imprimir="reporte"] .reportes-tabla th {
+    font-size: 9px;
+    padding: 5px 6px;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  body[data-imprimir="reporte"] .reportes-tabla td {
+    font-size: 9px;
+    padding: 5px 6px;
+  }
+
+  body[data-imprimir="reporte"] .reportes-tabla tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body[data-imprimir="reporte"] .reportes-tabla-scroll {
+    overflow: visible;
   }
 }

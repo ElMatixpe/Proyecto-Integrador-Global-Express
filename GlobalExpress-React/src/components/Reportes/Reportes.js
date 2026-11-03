@@ -269,7 +269,7 @@ function Reportes({ usuario }) {
         )}
 
         <div className="reportes-pdf">
-          <div className="reportes-pdf-empresa">GLOBALEXPRESS MINIMARKET</div>
+          <div className="reportes-pdf-empresa">GLOBAL EXPRESS MINIMARKET</div>
           <div className="reportes-pdf-tipo">{indicador.titulo}</div>
           <div className="reportes-pdf-meta">
             {errorPeriodo ? 'Período no válido' : `Período: ${fechaCorta(desde)} al ${fechaCorta(hasta)}`}
@@ -306,7 +306,6 @@ function Reportes({ usuario }) {
               </tbody>
             </table>
           </div>
-
           {reporte.hayMesParcial && reporte.nota && <p className="reportes-nota">{reporte.nota}</p>}
         </div>
       </section>

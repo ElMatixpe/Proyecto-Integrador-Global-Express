@@ -1,14 +1,11 @@
-// Cálculos de los reportes e indicadores. Reciben la lista de ventas y devuelven números / filas.
-// Solo las ventas "Pagado" cuentan como ingresos. Las "Cancelado" se informan aparte.
-//   calcularTotalVentasMes           -> totales por mes (indicadores 1 y 4) y "ingresos" en calcularKpis
-//   obtenerProductoTop               -> productoTop en calcularKpis
-//   exportarPDF                      -> botón "Descargar PDF" del módulo
+// Cálculos de los reportes e indicadores. 
 export const NOMBRES_MES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
-// Redondea "como en la escuela" (9.225 -> 9.23). Evita el error de coma flotante
+// Redondeo y formato 
+// Redondea (9.225 -> 9.23). Evita el error de coma flotante
 // de Math.round(n * 100) / 100 y de toFixed (que daban 9.22).
 export const redondear = (n, decimales = 2) => {
   const signo = n < 0 ? -1 : 1;
@@ -43,8 +40,31 @@ const etiquetaMes = (ym) => {
   return `${NOMBRES_MES[Number(m) - 1]} ${a}`;
 };
 
-// Primer día del mes anterior a la fecha dada
+// Primer día del mes anterior a la fecha dada: '2026-08-15' -> '2026-07-01'
 export const inicioMesAnterior = (iso) => `${mesAnteriorDe(mesDe(iso))}-01`;
+
+const aFecha = (iso) => {
+  const [a, m, d] = iso.slice(0, 10).split('-').map(Number);
+  return new Date(a, m - 1, d);
+};
+
+// Suma (o resta, si es negativo) días a una fecha 'AAAA-MM-DD'
+const sumarDias = (iso, dias) => {
+  const f = aFecha(iso);
+  f.setDate(f.getDate() + dias);
+  return aISO(f);
+};
+
+// Días entre dos fechas 'AAAA-MM-DD' (la misma fecha = 0)
+const diferenciaDias = (desde, hasta) => Math.round((aFecha(hasta) - aFecha(desde)) / 86400000);
+
+// Desde qué fecha hay que pedir las ventas al backend: el mes anterior completo y, además, los 31 días
+// previos a "desde" (para comparar con el período anterior de la misma duración).
+export const inicioConsulta = (iso) => {
+  const mesAnterior = inicioMesAnterior(iso);
+  const treintaYUno = sumarDias(iso, -31);
+  return mesAnterior < treintaYUno ? mesAnterior : treintaYUno;
+};
 
 const mesAnteriorDe = (ym) => {
   const [a, m] = ym.split('-').map(Number);
@@ -77,15 +97,7 @@ const diasDelMes = (ym) => {
 
 const dosDigitos = (n) => String(n).padStart(2, '0');
 
-// Días del mes que entran en el período: [primer día, último día] como número de día
-const ventanaDelMes = (ym, desde, hasta) => {
-  const primero = desde > `${ym}-01` ? Number(desde.slice(8, 10)) : 1;
-  const ultimoMes = diasDelMes(ym);
-  const ultimo = hasta < `${ym}-${dosDigitos(ultimoMes)}` ? Number(hasta.slice(8, 10)) : ultimoMes;
-  return [primero, ultimo];
-};
-
-// Filtros y totales
+// Filtros y totales 
 export const filtrarPorPeriodo = (ventas, desde, hasta) =>
   ventas.filter((v) => {
     const dia = v.fecha.slice(0, 10);
@@ -95,7 +107,7 @@ export const filtrarPorPeriodo = (ventas, desde, hasta) =>
 const pagadas = (ventas) => ventas.filter((v) => v.estado === 'Pagado');
 const suma = (ventas) => ventas.reduce((acc, v) => acc + Number(v.total), 0);
 
-// Totales por mes: solo con ventas pagadas
+// Totales por mes: { '2026-07': { total, transacciones } } solo con ventas pagadas
 const totalesPorMes = (ventas) => {
   const mapa = {};
   pagadas(ventas).forEach((v) => {
@@ -107,12 +119,11 @@ const totalesPorMes = (ventas) => {
   return mapa;
 };
 
-//Tarjetas: ingresos, máximo, mínimo, promedio, canceladas 
+// Tarjetas: ingresos, máximo, mínimo, promedio, canceladas 
 export function calcularKpis(ventasPeriodo) {
   const ok = pagadas(ventasPeriodo);
   const canceladas = ventasPeriodo.filter((v) => v.estado === 'Cancelado');
   const ingresos = suma(ok);
-
   let maxima = null;
   let minima = null;
   ok.forEach((v) => {
@@ -143,7 +154,7 @@ export function calcularKpis(ventasPeriodo) {
   };
 }
 
-//Indicadores
+// Indicadores 
 const NOTA_PARCIAL = '* Mes parcial: solo incluye las ventas dentro del período seleccionado.';
 
 export const INDICADORES = [
@@ -173,15 +184,13 @@ export const INDICADORES = [
     color: 'amarillo',
     icono: 'moneda',
     titulo: 'Promedio de Venta Mensual por Operación',
-    descripcion: 'Monto promedio (ticket) de cada venta realizada en el mes.',
+    descripcion: 'Monto promedio de cada venta realizada en el mes.',
   },
 ];
 
-/**
- * Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
- * - ventasPeriodo: ventas dentro del rango de fechas elegido.
- * - todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación).
- */
+/* Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
+ * ventasPeriodo: ventas dentro del rango de fechas elegido.
+ * todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación). */
 export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde, hasta) {
   const meses = mesesEntre(desde, hasta);
   const porMes = totalesPorMes(ventasPeriodo);
@@ -189,7 +198,7 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
   const hayMesParcial = meses.some((ym) => esMesParcial(ym, desde, hasta));
 
   if (idIndicador === 1) {
-    // Participación = ventas del mes / total de ventas del período x 100
+    // Porcentaje de Ventas por Mes = ventas del mes / total de ventas del período x 100
     const totalPeriodo = suma(pagadas(ventasPeriodo));
     return {
       hayMesParcial,
@@ -203,7 +212,7 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
   }
 
   if (idIndicador === 2) {
-    // Participación = unidades del producto / total de unidades vendidas x 100
+    // Porcentaje de participación del producto en las ventas Mensuales = unidades del producto / total de unidades vendidas x 100
     const productos = {};
     let totalUnidades = 0;
     pagadas(ventasPeriodo).forEach((v) => {
@@ -225,40 +234,75 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
   }
 
   if (idIndicador === 3) {
-    // Variación = (mes actual - mes anterior) / mes anterior x 100
-    // Si el mes es parcial (ej. el mes en curso) se compara con los MISMOS DÍAS del mes anterior,
-    // para no comparar 11 días contra un mes completo.
+    // Porcentaje de variación de ventas mensual = (venta actual - venta de comparación) / venta de comparación x 100
+    // Mes completo: se compara con el mes anterior completo.
+    // Mes parcial (el período Desde/Hasta no cubre el mes entero, p. ej. el mes en curso): se compara
+    // con el período INMEDIATAMENTE ANTERIOR de la misma duración. Así la comparación depende siempre
+    // de las fechas elegidas (Desde / Hasta): 12/10 al 17/10 (6 días) se compara con 06/10 al 11/10.
+    // "Venta Mes Anterior" muestra siempre el total completo del mes anterior.
     const pagadasTodas = pagadas(todasLasVentas);
+
+    const filas = meses.map((ym) => {
+      const primeroMes = `${ym}-01`;
+      const ultimoMes = `${ym}-${dosDigitos(diasDelMes(ym))}`;
+      const ini = desde > primeroMes ? desde : primeroMes; // primer día del mes dentro del período
+      const fin = hasta < ultimoMes ? hasta : ultimoMes; // último día del mes dentro del período
+
+      const actual = suma(filtrarPorPeriodo(pagadasTodas, ini, fin));
+
+      const previo = mesAnteriorDe(ym);
+      const anteriorCompleto = suma(
+        filtrarPorPeriodo(pagadasTodas, `${previo}-01`, `${previo}-${dosDigitos(diasDelMes(previo))}`)
+      );
+
+      const parcial = esMesParcial(ym, desde, hasta);
+      let comparable = anteriorCompleto;
+      let textoComparable = moneda(anteriorCompleto);
+      if (parcial) {
+        const dias = diferenciaDias(ini, fin) + 1;
+        const finPrevio = sumarDias(ini, -1);
+        const inicioPrevio = sumarDias(ini, -dias);
+        comparable = suma(filtrarPorPeriodo(pagadasTodas, inicioPrevio, finPrevio));
+        textoComparable = moneda(comparable);
+      }
+
+      const nombre = etiquetaMes(ym);
+      const fila = [nombre, moneda(actual), moneda(anteriorCompleto)];
+      if (hayMesParcial) fila.push(textoComparable);
+
+      if (!comparable) {
+        fila.push('—', 'Sin referencia');
+      } else {
+        const variacion = redondear(((actual - comparable) / comparable) * 100);
+        const estado = variacion > 0 ? 'Crecimiento' : variacion < 0 ? 'Decrecimiento' : 'Sin cambio';
+        fila.push(variacionTexto(variacion), estado);
+      }
+      return fila;
+    });
+
     return {
       hayMesParcial,
-      nota: '* Mes parcial: se compara con los mismos días del mes anterior.',
-      columnas: ['Período / Mes', 'Venta Mes Actual (S/)', 'Venta Mes Anterior (S/)', 'Variación (%)', 'Estado'],
-      filas: meses.map((ym) => {
-        const actual = porMes[ym]?.total || 0;
-        const previo = mesAnteriorDe(ym);
-        const tope = diasDelMes(previo);
-        // Mes completo -> mes anterior completo. Mes parcial -> mismos días del mes anterior.
-        const [dia1, dia2] = esMesParcial(ym, desde, hasta) ? ventanaDelMes(ym, desde, hasta) : [1, tope];
-        const inicioPrevio = `${previo}-${dosDigitos(Math.min(dia1, tope))}`;
-        const finPrevio = `${previo}-${dosDigitos(Math.min(dia2, tope))}`;
-        const anterior = suma(filtrarPorPeriodo(pagadasTodas, inicioPrevio, finPrevio));
-        if (!anterior) return [etiqueta(ym), moneda(actual), moneda(0), '—', 'Sin referencia'];
-        const variacion = redondear(((actual - anterior) / anterior) * 100);
-        const estado = variacion > 0 ? 'Crecimiento' : variacion < 0 ? 'Decrecimiento' : 'Sin cambio';
-        return [etiqueta(ym), moneda(actual), moneda(anterior), variacionTexto(variacion), estado];
-      }),
+      nota: '* Mes parcial: la variación se compara con el período anterior de la misma duración.',
+      columnas: [
+        'Período / Mes',
+        'Venta Mes Actual (S/)',
+        'Venta Mes Anterior (S/)',
+        ...(hayMesParcial ? ['Período anterior equivalente (S/)'] : []),
+        'Variación (%)',
+        'Estado',
+      ],
+      filas,
     };
   }
 
-  // Indicador 4: ticket promedio = monto total del mes / número de ventas del mes
+  // Indicador 4: Promedio de Venta Mensual por Operación  = monto total del mes / número de ventas del mes
   return {
     hayMesParcial,
     nota: NOTA_PARCIAL,
-    columnas: ['Mes', 'Monto Total Ventas (S/)', 'Número de Transacciones', 'Ticket Promedio (S/)'],
+    columnas: ['Mes', 'Monto Total Ventas (S/)', 'Número de Transacciones', 'Monto Promedio (S/)'],
     filas: meses.map((ym) => {
       const { total = 0, transacciones = 0 } = porMes[ym] || {};
       return [etiqueta(ym), moneda(total), String(transacciones), moneda(transacciones ? total / transacciones : 0)];
     }),
   };
 }
-

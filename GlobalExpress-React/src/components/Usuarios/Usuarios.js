@@ -8,8 +8,7 @@ import './Usuarios.css';
 
 const FORM_VACIO = { nombre: '', usuario: '', contrasena: '', rol: 'Cajero' };
 
-// El backend devuelve { idUsuario, nombre, username, rol } (nunca la contraseña).
-// Aquí se adapta a los nombres que ya usa este módulo.
+// El backend devuelve { idUsuario, nombre, username, rol }
 const desdeApi = (u) => ({ id: u.idUsuario, nombre: u.nombre, usuario: u.username, rol: u.rol });
 
 function Usuarios({ usuarioActual }) {
@@ -20,9 +19,10 @@ function Usuarios({ usuarioActual }) {
   const [guardando, setGuardando] = useState(false);
 
   const [menuAbierto, setMenuAbierto] = useState(null);
+  const [menuPos, setMenuPos] = useState({});
   const [busqueda, setBusqueda] = useState('');
 
-  // Modal de crear / editar: 'crear' | 'editar' | null
+  // Modal de crear / editar: 'crear' | 'editar' 
   const [modo, setModo] = useState(null);
   const [usuarioEditar, setUsuarioEditar] = useState(null);
   const [usuarioEliminar, setUsuarioEliminar] = useState(null);
@@ -53,8 +53,20 @@ function Usuarios({ usuarioActual }) {
     return usuarios.filter((u) => String(u.id).includes(texto));
   }, [usuarios, busqueda]);
 
-  const toggleMenu = (usuario) => {
-    setMenuAbierto((actual) => (actual === usuario ? null : usuario));
+  const toggleMenu = (usuario, evento) => {
+    if (menuAbierto === usuario) {
+      setMenuAbierto(null);
+      return;
+    }
+    const caja = evento.currentTarget.getBoundingClientRect();
+    const derecha = window.innerWidth - caja.right;
+    const abrirArriba = window.innerHeight - caja.bottom < 120;
+    setMenuPos(
+      abrirArriba
+        ? { right: derecha, bottom: window.innerHeight - caja.top + 4 }
+        : { right: derecha, top: caja.bottom + 4 }
+    );
+    setMenuAbierto(usuario);
   };
 
   const abrirCrear = () => {
@@ -99,7 +111,6 @@ function Usuarios({ usuarioActual }) {
     setError('');
   };
 
-  // Cerrar el menú y los modales con la tecla Escape
   useEffect(() => {
     const alPresionarTecla = (e) => {
       if (e.key === 'Escape') {
@@ -176,7 +187,6 @@ function Usuarios({ usuarioActual }) {
       setUsuarios((actual) => actual.filter((u) => u.id !== usuarioEliminar.id));
       cerrarEliminar();
     } catch (err) {
-      // Ej.: 409 si el usuario ya tiene ventas registradas
       setError(err.message);
     } finally {
       setGuardando(false);
@@ -244,8 +254,7 @@ function Usuarios({ usuarioActual }) {
             </tr>
           </thead>
           <tbody>
-            {usuariosFiltrados.map((u, index) => {
-              const esUltimaFila = index === usuariosFiltrados.length - 1;
+            {usuariosFiltrados.map((u) => {
               return (
                 <tr key={u.id}>
                   <td>{u.id}</td>
@@ -265,13 +274,14 @@ function Usuarios({ usuarioActual }) {
                         aria-label={`Acciones de ${u.nombre}`}
                         aria-haspopup="menu"
                         aria-expanded={menuAbierto === u.usuario}
-                        onClick={() => toggleMenu(u.usuario)}
+                        onClick={(e) => toggleMenu(u.usuario, e)}
                       >
                         ⋮
                       </button>
                       {menuAbierto === u.usuario && (
                         <div
-                          className={`users-menu${esUltimaFila ? ' users-menu-arriba' : ''}`}
+                          className="users-menu"
+                          style={menuPos}
                           role="menu"
                         >
                           <button

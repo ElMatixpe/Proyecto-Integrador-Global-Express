@@ -69,7 +69,16 @@
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 10px;
-  overflow: hidden;
+  max-height: 60vh; /* scroll vertical cuando hay muchos productos */
+  overflow: auto;
+}
+
+/* La cabecera queda fija al desplazarse */
+.productos-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #eedf3a;
 }
 
 .productos-table {

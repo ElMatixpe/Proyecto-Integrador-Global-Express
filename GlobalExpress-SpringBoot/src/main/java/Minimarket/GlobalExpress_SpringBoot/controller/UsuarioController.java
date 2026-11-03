@@ -2,9 +2,11 @@ package Minimarket.GlobalExpress_SpringBoot.controller;
 
 import Minimarket.GlobalExpress_SpringBoot.dto.LoginRequest;
 import Minimarket.GlobalExpress_SpringBoot.dto.LoginResponse;
+import Minimarket.GlobalExpress_SpringBoot.dto.UsuarioRequest;
 import Minimarket.GlobalExpress_SpringBoot.model.Usuario;
 import Minimarket.GlobalExpress_SpringBoot.security.SesionService;
 import Minimarket.GlobalExpress_SpringBoot.service.UsuarioService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -34,13 +36,13 @@ public class UsuarioController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Usuario crear(@RequestBody Usuario usuario) {
-        return usuarioService.crear(usuario);
+    public Usuario crear(@Valid @RequestBody UsuarioRequest usuario) {
+        return usuarioService.crear(usuario.aEntidad());
     }
 
     @PutMapping("/{id}")
-    public Usuario actualizar(@PathVariable Integer id, @RequestBody Usuario usuario) {
-        return usuarioService.actualizar(id, usuario);
+    public Usuario actualizar(@PathVariable Integer id, @Valid @RequestBody UsuarioRequest usuario) {
+        return usuarioService.actualizar(id, usuario.aEntidad());
     }
 
     @DeleteMapping("/{id}")
@@ -49,14 +51,14 @@ public class UsuarioController {
         usuarioService.eliminar(id);
     }
 
-    /** Login del React devuelve { token, usuario } (sin contraseña) o error 401 */
+    /* Login del React: devuelve { token, usuario } */
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest credenciales) {
         Usuario usuario = usuarioService.autenticar(credenciales.username(), credenciales.contrasena());
         return new LoginResponse(sesionService.crear(usuario.getIdUsuario()), usuario);
     }
 
-    /** Cierra la sesion y el token deja de servir. */
+    /* Cierra la sesión: el token deja de servir. */
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(Authentication autenticacion) {

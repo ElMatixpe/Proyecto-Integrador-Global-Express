@@ -6,6 +6,7 @@ import Minimarket.GlobalExpress_SpringBoot.dto.VentaHistorialDto;
 import Minimarket.GlobalExpress_SpringBoot.model.Venta;
 import Minimarket.GlobalExpress_SpringBoot.security.UsuarioSesion;
 import Minimarket.GlobalExpress_SpringBoot.service.VentaService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,7 +22,7 @@ public class VentaController {
         this.ventaService = ventaService;
     }
 
-    /* GET /api/ventas | GET /api/ventas?estado=Pagado | GET /api/ventas?estado=Cancelado */
+    /* GET /api/ventas  |  GET /api/ventas?estado=Pagado  |  GET /api/ventas?estado=Cancelado */
     @GetMapping
     public List<VentaHistorialDto> listar(@RequestParam(required = false) String estado) {
         return ventaService.listar(estado);
@@ -37,13 +38,13 @@ public class VentaController {
         return ventaService.detalles(id);
     }
 
-    /* Eliminación logica: PUT /api/ventas/{id}/cancelar (Administrador y Cajero) */
+    /* Eliminación lógica: PUT /api/ventas/{id}/cancelar (Administrador y Cajero) */
     @PutMapping("/{id}/cancelar")
     public VentaHistorialDto cancelar(@PathVariable Integer id) {
         return ventaService.cancelar(id);
     }
 
-    /* Eliminación fisica: DELETE /api/ventas/{id} (solo Administrador y solo ventas canceladas) */
+    /* Eliminación física: DELETE /api/ventas/{id} (solo Administrador, solo ventas canceladas) */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Integer id) {
@@ -52,7 +53,7 @@ public class VentaController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Venta registrar(@RequestBody VentaRequest solicitud, @AuthenticationPrincipal UsuarioSesion sesion) {
+    public Venta registrar(@Valid @RequestBody VentaRequest solicitud, @AuthenticationPrincipal UsuarioSesion sesion) {
         VentaRequest conVendedor = new VentaRequest(
                 sesion.idUsuario(), solicitud.cliente(), solicitud.metodoPago(),
                 solicitud.estado(), solicitud.detalles());

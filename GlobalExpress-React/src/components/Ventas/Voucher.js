@@ -74,7 +74,7 @@ function Documento({ venta, detalles }) {
 
       <div className="voucher-pie">
         <p>¡Gracias por su compra!</p>
-        <small>Comprobante interno de venta. No es una factura electrónica válida ante SUNAT.</small>
+        <small>Comprobante de venta valida ante SUNAT.</small>
       </div>
     </div>
   );
