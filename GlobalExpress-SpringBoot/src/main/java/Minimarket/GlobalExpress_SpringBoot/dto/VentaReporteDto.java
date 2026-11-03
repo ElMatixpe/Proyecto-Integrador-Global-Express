@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/** Una venta con su detalle, para calcular los indicadores del módulo de Reportes. */
+/* Una venta con su detalle, para calcular los indicadores del modulo de Reportes. */
 public record VentaReporteDto(
         Integer idVenta,
         LocalDateTime fecha,

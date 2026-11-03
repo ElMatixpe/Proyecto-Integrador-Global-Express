@@ -14,7 +14,7 @@ import {
 import { TrendIcon, BoxIcon, BarsIcon, CoinIcon, FileIcon } from '../Icons/icons';
 import './Reportes.css';
 
-// Icono de cada indicador
+//Icono de cada indicador
 const ICONOS = {
   tendencia: <TrendIcon />,
   caja: <BoxIcon color="#f26522" size={22} />,
@@ -22,7 +22,7 @@ const ICONOS = {
   moneda: <CoinIcon />,
 };
 
-// Variaciones: "+13.89%" en verde, "-4.10%" en rojo
+//Variaciones: "+13.89%" en verde, "-4.10%" en rojo
 const claseCelda = (celda) => {
   if (celda.startsWith('+')) return 'reportes-positivo';
   if (/^-\d/.test(celda)) return 'reportes-negativo';
@@ -35,7 +35,7 @@ function Reportes({ usuario }) {
   const hoyFecha = useMemo(() => new Date(), []);
   const hoy = aISO(hoyFecha);
 
-  // Período del reporte (equivale a periodoInicio / periodoFin de la tabla reporte)
+  // Periodo del reporte (equivale a periodoInicio / periodoFin de la tabla reporte)
   const [desde, setDesde] = useState(primerDiaDeMes(hoyFecha, 2));
   const [hasta, setHasta] = useState(hoy);
   const [indicadorActivo, setIndicadorActivo] = useState(3);

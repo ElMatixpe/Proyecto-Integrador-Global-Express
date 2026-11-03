@@ -1,5 +1,4 @@
 package Minimarket.GlobalExpress_SpringBoot.repository;
-
 import Minimarket.GlobalExpress_SpringBoot.model.DetalleVenta;
 import Minimarket.GlobalExpress_SpringBoot.dto.DetalleVentaDto;
 import java.time.LocalDateTime;
@@ -18,8 +17,7 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Inte
     @Query("DELETE FROM DetalleVenta d WHERE d.venta.idVenta = :idVenta")
     int eliminarPorVenta(@Param("idVenta") Integer idVenta);
 
-    /**
-     * CONSULTA 2: detalle_venta + producto */
+    //consulta dos tablas
     @Query("""
             SELECT new Minimarket.GlobalExpress_SpringBoot.dto.DetalleVentaDto(
                 d.idDetalle, d.cantidad, d.precioUnitario, d.subtotal,
@@ -34,3 +32,4 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Inte
     List<DetalleVenta> findByVentaFechaGreaterThanEqualAndVentaFechaLessThan(
             LocalDateTime inicio, LocalDateTime fin);
 }
+

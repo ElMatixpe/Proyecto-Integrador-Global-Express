@@ -4,7 +4,7 @@ import { codigoDeProducto } from './productosApi';
 // Backend: GET /api/reportes/ventas?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
 // Devuelve las ventas del período con su detalle:
 //   { idVenta, fecha, estado, total, detalles: [{ idProducto, nombre, marca, cantidad, subtotal }] }
-// Se adapta a la forma que usan los cálculos de utils/reportes.js.
+// Se adapta a la forma que usan los calculos de utils/reportes.js.
 export const listarVentasReporte = async (desde, hasta) => {
   const datos = await peticion(`/reportes/ventas?desde=${desde}&hasta=${hasta}`);
   return datos.map((v) => ({
@@ -22,8 +22,8 @@ export const listarVentasReporte = async (desde, hasta) => {
   }));
 };
 
-// Backend: POST /api/reportes  ->  guarda en la tabla reporte quién generó el reporte,
-// cuándo y para qué período. Devuelve { idReporte, fechaGeneracion, periodoInicio, periodoFin, ... }
+//Backend: POST /api/reportes -> guarda en la tabla reporte quién generó el reporte,
+// cuando y para qué periodo. 
 export const registrarReporte = ({ idUsuario, periodoInicio, periodoFin }) =>
   peticion('/reportes', {
     metodo: 'POST',

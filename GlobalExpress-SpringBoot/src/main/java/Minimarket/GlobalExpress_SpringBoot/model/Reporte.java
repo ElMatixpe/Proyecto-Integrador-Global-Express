@@ -26,7 +26,7 @@ public class Reporte {
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    // Opcional: un reporte cubre un período completo, no depende de una sola venta
+    //Opcional: Un reporte cubre un período completo, no depende de una sola venta
     @ManyToOne
     @JoinColumn(name = "id_venta")
     private Venta venta;

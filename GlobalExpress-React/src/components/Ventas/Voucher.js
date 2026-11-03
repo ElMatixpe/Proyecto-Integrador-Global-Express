@@ -8,7 +8,7 @@ import logo from '../../Imagenes/logo.jpg';
 import './Voucher.css';
 
 // Documento del voucher. Se dibuja dos veces en la vista previa del modal y en una copia
-// oculta que es la que realmente se imprime (asi el PDF sale limpio, sin ventanas encima)
+// oculta que es la que realmente se imprime 
 function Documento({ venta, detalles }) {
   const cancelada = venta.estado === 'Cancelado';
   return (

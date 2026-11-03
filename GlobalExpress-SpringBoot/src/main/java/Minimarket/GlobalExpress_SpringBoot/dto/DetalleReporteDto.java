@@ -2,7 +2,7 @@ package Minimarket.GlobalExpress_SpringBoot.dto;
 
 import java.math.BigDecimal;
 
-/** Una línea de una venta, tal como la necesita el reporte (producto, cantidad y subtotal). */
+/* Una linea de una venta, tal como la necesita el reporte (producto, cantidad y subtotal)*/
 public record DetalleReporteDto(
         Integer idProducto,
         String nombre,

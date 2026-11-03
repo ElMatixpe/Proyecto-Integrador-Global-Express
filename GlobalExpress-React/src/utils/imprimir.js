@@ -1,4 +1,4 @@
-// Imprime un documento concreto de la aplicación 
+// Imprime un documento concreto de la aplicacion 
 // Marca el <body> con data-imprimir="<tipo>" mientras se abre el cuadro de impresión; los CSS de cada
 // documento (@media print) usan esa marca para mostrar solo lo suyo. En el cuadro de impresión se
 // elige "Guardar como PDF". El título de la pestaña se usa como nombre sugerido del archivo.
@@ -10,3 +10,4 @@ export function imprimirDocumento(tipo, titulo) {
   delete document.body.dataset.imprimir;
   document.title = tituloOriginal;
 }
+

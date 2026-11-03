@@ -13,3 +13,4 @@ export const puedeGestionarProductos = (rol) => rol === 'Administrador';
 
 // Eliminar de forma permanente una venta cancelada: solo el Administrador
 export const puedeEliminarVentas = (rol) => rol === 'Administrador';
+

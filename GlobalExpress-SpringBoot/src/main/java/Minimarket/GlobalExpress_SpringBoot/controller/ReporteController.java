@@ -42,7 +42,7 @@ public class ReporteController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Reporte generar(@RequestBody ReporteRequest solicitud, @AuthenticationPrincipal UsuarioSesion sesion) {
-        // El reporte queda a nombre de quien tiene la sesión iniciada
+        //El reporte queda a nombre de quien tiene la sesion iniciada
         ReporteRequest conUsuario = new ReporteRequest(
                 sesion.idUsuario(), solicitud.idVenta(), solicitud.periodoInicio(), solicitud.periodoFin());
         return reporteService.generar(conUsuario);

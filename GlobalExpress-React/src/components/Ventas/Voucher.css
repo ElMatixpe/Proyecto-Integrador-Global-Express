@@ -116,7 +116,6 @@
   .voucher-datos { grid-template-columns: 1fr; }
 }
 
-/* Impresion: solo el voucher, en una hoja A4 */
 .voucher-print { display: none; }
 
 @page { size: A4; margin: 15mm; }
@@ -137,3 +136,4 @@
     print-color-adjust: exact;
   }
 }
+

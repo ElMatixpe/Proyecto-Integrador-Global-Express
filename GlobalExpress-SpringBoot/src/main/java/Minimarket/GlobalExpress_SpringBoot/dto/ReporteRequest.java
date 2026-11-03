@@ -1,5 +1,4 @@
 package Minimarket.GlobalExpress_SpringBoot.dto;
-
 import java.time.LocalDate;
 
 public record ReporteRequest(
@@ -8,3 +7,4 @@ public record ReporteRequest(
         LocalDate periodoInicio,
         LocalDate periodoFin) {
 }
+

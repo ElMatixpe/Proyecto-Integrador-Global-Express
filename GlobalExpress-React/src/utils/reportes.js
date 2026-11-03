@@ -131,7 +131,7 @@ export function calcularKpis(ventasPeriodo) {
     if (!minima || Number(v.total) < Number(minima.total)) minima = v;
   });
 
-  // Producto más vendido (en unidades) del período
+  //Producto más vendido (en unidades) del período
   const unidades = {};
   ok.forEach((v) => {
     (v.detalles || []).forEach((d) => {
@@ -154,7 +154,7 @@ export function calcularKpis(ventasPeriodo) {
   };
 }
 
-// Indicadores 
+//Indicadores 
 const NOTA_PARCIAL = '* Mes parcial: solo incluye las ventas dentro del período seleccionado.';
 
 export const INDICADORES = [
@@ -188,9 +188,9 @@ export const INDICADORES = [
   },
 ];
 
-/* Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
- * ventasPeriodo: ventas dentro del rango de fechas elegido.
- * todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación). */
+/*Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
+ *ventasPeriodo: ventas dentro del rango de fechas elegido.
+ *todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación). */
 export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde, hasta) {
   const meses = mesesEntre(desde, hasta);
   const porMes = totalesPorMes(ventasPeriodo);
@@ -198,7 +198,7 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
   const hayMesParcial = meses.some((ym) => esMesParcial(ym, desde, hasta));
 
   if (idIndicador === 1) {
-    // Porcentaje de Ventas por Mes = ventas del mes / total de ventas del período x 100
+    //Porcentaje de Ventas por Mes = ventas del mes / total de ventas del período x 100
     const totalPeriodo = suma(pagadas(ventasPeriodo));
     return {
       hayMesParcial,

@@ -1,5 +1,4 @@
 package Minimarket.GlobalExpress_SpringBoot.repository;
-
 import Minimarket.GlobalExpress_SpringBoot.model.Venta;
 import Minimarket.GlobalExpress_SpringBoot.dto.VentaHistorialDto;
 import java.time.LocalDateTime;
@@ -37,3 +36,4 @@ public interface VentaRepository extends JpaRepository<Venta, Integer> {
     List<Venta> findByFechaGreaterThanEqualAndFechaLessThanOrderByFechaAsc(
             LocalDateTime inicio, LocalDateTime fin);
 }
+

@@ -48,14 +48,8 @@ public class ReporteService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Reporte", id));
     }
 
-    /**
-     * Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los
-     * indicadores
-     * del reporte: el React calcula con ellas el porcentaje de ventas por mes, la
-     * participación
-     * por producto, la variación mensual, el ticket promedio y las tarjetas de
-     * resumen.
-     */
+    /* Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los 4
+     * indicadores del reporte */
     @Transactional(readOnly = true)
     public List<VentaReporteDto> ventasDelPeriodo(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) {
