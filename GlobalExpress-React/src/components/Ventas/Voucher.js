@@ -7,8 +7,8 @@ import { moneda } from '../../utils/reportes';
 import logo from '../../Imagenes/logo.jpg';
 import './Voucher.css';
 
-// Documento del voucher. Se dibuja dos veces: en la vista previa del modal y en una copia
-// oculta que es la que realmente se imprime (así el PDF sale limpio, sin ventanas encima).
+// Documento del voucher. Se ve dos veces: en la vista previa del modal y en una copia
+// oculta que es la que realmente se imprime 
 function Documento({ venta, detalles }) {
   const cancelada = venta.estado === 'Cancelado';
   return (
@@ -74,7 +74,7 @@ function Documento({ venta, detalles }) {
 
       <div className="voucher-pie">
         <p>¡Gracias por su compra!</p>
-        <small>Comprobante interno de venta. No es una factura electrónica válida ante SUNAT.</small>
+        <small>Comprobante de venta válida ante la SUNAT.</small>
       </div>
     </div>
   );
@@ -136,3 +136,4 @@ function Voucher({ venta, onCerrar }) {
 }
 
 export default Voucher;
+

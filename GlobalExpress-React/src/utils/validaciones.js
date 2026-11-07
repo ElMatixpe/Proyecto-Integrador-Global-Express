@@ -1,10 +1,8 @@
 // Filtros de entrada: cada función recibe lo que escribió/pegó el usuario y
 // devuelve el texto ya limpio, quitando los caracteres que no están permitidos.
-
 const LETRAS = 'A-Za-zÁÉÍÓÚÜÑáéíóúüñ';
 
 // Solo letras (con tildes y ñ), espacios, apóstrofe, punto y guion. Sin números.
-// Ej.: "Adrian Ortiz", "María O'Brien", "Ana-Lucía"
 export const soloNombre = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}\\s'.-]`, 'g'), '')
@@ -13,7 +11,6 @@ export const soloNombre = (valor, max = 50) =>
     .slice(0, max);
 
 // Nombre de producto o marca: letras, números, espacios y . - & ' % /
-// Ej.: "Coca Cola 1L", "Big Cola 1.5L", "Coca-Cola"
 export const textoProducto = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}0-9\\s.&'%/-]`, 'g'), '')
@@ -31,7 +28,7 @@ export const sinEspacios = (valor) => valor.replace(/\s/g, '');
 // Solo dígitos (cantidades, IDs numéricos).
 export const soloEnteros = (valor, max = 6) => valor.replace(/\D/g, '').slice(0, max);
 
-// Precio: enteros o decimales con hasta 2 decimales (ej. 5, 5.5, 5.50). Sin letras ni signos.
+// Precio: enteros o decimales con hasta 2 decimales. Sin letras ni signos.
 export const soloDecimal = (valor, maxEnteros = 6) => {
   let limpio = valor.replace(',', '.').replace(/[^\d.]/g, '');
   const [entero, ...resto] = limpio.split('.');

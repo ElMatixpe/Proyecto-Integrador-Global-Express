@@ -8,7 +8,7 @@ import { desdeApiVenta, listarDetallesVenta } from '../../services/ventasApi';
 import { puedeEliminarVentas } from '../../utils/permisos';
 import './Ventas.css';
 
-// Por ahora solo se acepta pago en efectivo (Tarjeta, Yape y Plin aún no están implementados)
+// Solo se acepta pago en efectivo 
 const METODOS_PAGO = ['Efectivo'];
 
 const FILTROS = [
@@ -20,9 +20,9 @@ const FILTROS = [
 const moneda = (n) => `S/ ${Number(n).toFixed(2)}`;
 
 function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, onReintentar }) {
-  const [vista, setVista] = useState('historial'); // 'historial' | 'nueva'
+  const [vista, setVista] = useState('historial'); 
 
-  // ---- Historial ----
+  // Historial 
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState('exito');
 
@@ -37,7 +37,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       });
   }, [ventas, busqueda, filtro]);
 
-  // ---- Nueva venta ----
+  // Nueva venta 
   const [cliente, setCliente] = useState('');
   const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [carrito, setCarrito] = useState([]);
@@ -46,9 +46,9 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const [ventaExitosa, setVentaExitosa] = useState(null);
   const [modalCancelar, setModalCancelar] = useState(false);
   const [guardando, setGuardando] = useState(false);
-  const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
+  const [voucherVenta, setVoucherVenta] = useState(null); 
 
-  // ---- Cancelar una venta ya registrada (eliminación lógica) ----
+  // Cancelar una venta ya registrada (eliminación lógica) 
   const [ventaPorCancelar, setVentaPorCancelar] = useState(null);
   const [errorCancelacion, setErrorCancelacion] = useState('');
 
@@ -76,7 +76,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // ---- Eliminar una venta cancelada de forma permanente (eliminación física, solo Administrador) ----
+  // Eliminar una venta cancelada de forma permanente (eliminación física, solo Administrador) 
   const [ventaPorEliminar, setVentaPorEliminar] = useState(null);
   const [confirmacionTexto, setConfirmacionTexto] = useState('');
   const [errorEliminacion, setErrorEliminacion] = useState('');
@@ -110,7 +110,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // ---- Detalle de una venta (consulta 2: detalle_venta + producto) ----
+  // Detalle de una venta 
   const [ventaDetalle, setVentaDetalle] = useState(null);
   const [detalles, setDetalles] = useState([]);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
@@ -130,10 +130,10 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // ---- Modal agregar producto ----
+  // Modal agregar producto 
   const [modalProductos, setModalProductos] = useState(false);
   const [busquedaProd, setBusquedaProd] = useState('');
-  const [cantidades, setCantidades] = useState({}); // { 1: 2 } (id del producto -> cantidad)
+  const [cantidades, setCantidades] = useState({}); 
 
   const total = carrito.reduce((suma, i) => suma + i.precio * i.cantidad, 0);
 
@@ -250,7 +250,6 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     setCarrito((actual) => actual.map((i) => (i.codigo === codigo ? { ...i, cantidad } : i)));
   };
 
-  // Al salir del campo, una cantidad vacía o 0 vuelve a 1.
   const normalizarCantidad = (codigo) => {
     setCarrito((actual) =>
       actual.map((i) => (i.codigo === codigo && !(i.cantidad >= 1) ? { ...i, cantidad: 1 } : i))
@@ -345,22 +344,17 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
             </div>
           )}
 
-          <p className="ventas-consulta-info">
-            <strong>Consulta 1:</strong> tabla <code>venta</code> (id, fecha, cliente, método de pago,
-            total, estado) + tabla <code>usuario</code> (nombre del vendedor).
-          </p>
-
           <div className="ventas-table-container ventas-tabla-scroll">
             <table className="ventas-table">
               <thead>
                 <tr>
-                  <th>ID<small>venta</small></th>
-                  <th>Fecha<small>venta</small></th>
-                  <th>Cliente<small>venta</small></th>
-                  <th>Vendedor<small>usuario</small></th>
-                  <th>Metodo de Pago<small>venta</small></th>
-                  <th>Total<small>venta</small></th>
-                  <th>Estado<small>venta</small></th>
+                  <th>ID</th>
+                  <th>Fecha</th>
+                  <th>Cliente</th>
+                  <th>Vendedor</th>
+                  <th>Metodo de Pago</th>
+                  <th>Total</th>
+                  <th>Estado</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -453,11 +447,6 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 </button>
               </div>
 
-              <p className="ventas-consulta-info">
-                <strong>Consulta 2:</strong> tabla <code>detalle_venta</code> (cantidad, precio unitario,
-                subtotal) + tabla <code>producto</code> (id, nombre, marca).
-              </p>
-
               {errorDetalle && (
                 <p className="ventas-error" role="alert">
                   {errorDetalle}
@@ -468,12 +457,12 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 <table className="ventas-table">
                   <thead>
                     <tr>
-                      <th>ID<small>producto</small></th>
-                      <th>Producto<small>producto</small></th>
-                      <th>Marca<small>producto</small></th>
-                      <th>Cantidad<small>detalle_venta</small></th>
-                      <th>Precio unit.<small>detalle_venta</small></th>
-                      <th>Subtotal<small>detalle_venta</small></th>
+                      <th>ID</th>
+                      <th>Producto</th>
+                      <th>Marca</th>
+                      <th>Cantidad</th>
+                      <th>Precio unit.</th>
+                      <th>Subtotal</th>
                     </tr>
                   </thead>
                   <tbody>

@@ -1,12 +1,10 @@
-// Cálculos de los reportes e indicadores. 
+// Cálculos de los reportes e indicadores.
 export const NOMBRES_MES = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Setiembre', 'Octubre', 'Noviembre', 'Diciembre',
 ];
 
-// Redondeo y formato 
-// Redondea (9.225 -> 9.23). Evita el error de coma flotante
-// de Math.round(n * 100) / 100 y de toFixed (que daban 9.22).
+// Redondeo y formato. Redondea. Evita el error de coma flotante
 export const redondear = (n, decimales = 2) => {
   const signo = n < 0 ? -1 : 1;
   const absoluto = Math.abs(n);
@@ -131,7 +129,7 @@ export function calcularKpis(ventasPeriodo) {
     if (!minima || Number(v.total) < Number(minima.total)) minima = v;
   });
 
-  //Producto más vendido (en unidades) del período
+  // Producto más vendido (en unidades) del período
   const unidades = {};
   ok.forEach((v) => {
     (v.detalles || []).forEach((d) => {
@@ -140,7 +138,7 @@ export function calcularKpis(ventasPeriodo) {
     });
   });
   const productoTop =
-    Object.values(unidades).sort((a, b) => b.unidades - a.unidades || a.codigo.localeCompare(b.codigo))[0] || null;
+    Object.values(unidades).sort((a, b) => b.unidades - a.unidades || a.codigo.localeCompare(b.codigo, undefined, { numeric: true }))[0] || null;
 
   return {
     ingresos,
@@ -154,7 +152,7 @@ export function calcularKpis(ventasPeriodo) {
   };
 }
 
-//Indicadores 
+// Indicadores 
 const NOTA_PARCIAL = '* Mes parcial: solo incluye las ventas dentro del período seleccionado.';
 
 export const INDICADORES = [
@@ -188,9 +186,7 @@ export const INDICADORES = [
   },
 ];
 
-/*Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
- *ventasPeriodo: ventas dentro del rango de fechas elegido.
- *todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación). */
+/* Devuelve { columnas, filas, hayMesParcial } del indicador pedido. */
 export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde, hasta) {
   const meses = mesesEntre(desde, hasta);
   const porMes = totalesPorMes(ventasPeriodo);
@@ -223,12 +219,12 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
       });
     });
     const lista = Object.values(productos)
-      .sort((a, b) => b.unidades - a.unidades || a.codigo.localeCompare(b.codigo))
+      .sort((a, b) => b.unidades - a.unidades || a.codigo.localeCompare(b.codigo, undefined, { numeric: true }))
       .slice(0, 10);
     return {
       hayMesParcial: false,
       nota: '',
-      columnas: ['Código', 'Producto', 'Marca', 'Unidades Vendidas', 'Participación (%)'],
+      columnas: ['ID', 'Producto', 'Marca', 'Unidades Vendidas', 'Participación (%)'],
       filas: lista.map((p) => [p.codigo, p.nombre, p.marca, `${p.unidades} u.`, porcentaje((p.unidades / totalUnidades) * 100)]),
     };
   }

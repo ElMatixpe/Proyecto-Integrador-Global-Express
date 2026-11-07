@@ -21,7 +21,7 @@ function Productos({
   const [busqueda, setBusqueda] = useState('');
 
   const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoEditar, setProductoEditar] = useState(null); // null = "nuevo producto"
+  const [productoEditar, setProductoEditar] = useState(null); 
   const [form, setForm] = useState(PRODUCTO_VACIO);
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);

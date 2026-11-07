@@ -2,7 +2,6 @@ import { peticion } from './api';
 import { codigoDeProducto } from './productosApi';
 
 // En la base de datos la venta tiene un id numérico (id_venta).
-// En pantalla se muestra el id tal como está en la base de datos, sin prefijos: 4, 15...
 export const codigoDeVenta = (id) => String(id);
 
 // El servidor envía la fecha como "2026-10-10T15:30:12": se muestra como 10/10/2026
@@ -11,13 +10,11 @@ const formatearFecha = (iso) => {
   return `${dia}/${mes}/${anio}`;
 };
 
-// Consulta 1 (venta + usuario): { idVenta, fecha, cliente, metodoPago, estado, total, vendedor }
-// (al registrar una venta el servidor responde con usuario:{nombre,...} en vez de vendedor)
 export const desdeApiVenta = (v) => ({
   id: v.idVenta,
   codigo: codigoDeVenta(v.idVenta),
   fecha: formatearFecha(v.fecha),
-  hora: String(v.fecha).slice(11, 16), // 'HH:mm'
+  hora: String(v.fecha).slice(11, 16), 
   cliente: v.cliente,
   vendedor: v.vendedor ?? v.usuario?.nombre ?? '',
   metodoPago: v.metodoPago,
@@ -30,8 +27,6 @@ export const listarVentas = async () => {
   return datos.map(desdeApiVenta);
 };
 
-// Consulta 2 (detalle_venta + producto):
-// GET /api/ventas/{id}/detalles -> [{ idDetalle, cantidad, precioUnitario, subtotal, idProducto, nombre, marca }]
 export const listarDetallesVenta = async (idVenta) => {
   const datos = await peticion(`/ventas/${idVenta}/detalles`);
   return datos.map((d) => ({
