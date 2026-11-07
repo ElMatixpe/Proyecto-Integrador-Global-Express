@@ -4,7 +4,6 @@ import { codigoDeProducto } from './productosApi';
 // Backend: GET /api/reportes/ventas?desde=AAAA-MM-DD&hasta=AAAA-MM-DD
 // Devuelve las ventas del período con su detalle:
 //   { idVenta, fecha, estado, total, detalles: [{ idProducto, nombre, marca, cantidad, subtotal }] }
-// Se adapta a la forma que usan los calculos de utils/reportes.js.
 export const listarVentasReporte = async (desde, hasta) => {
   const datos = await peticion(`/reportes/ventas?desde=${desde}&hasta=${hasta}`);
   return datos.map((v) => ({

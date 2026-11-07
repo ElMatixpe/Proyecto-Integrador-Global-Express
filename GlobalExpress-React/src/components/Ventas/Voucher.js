@@ -137,3 +137,4 @@ function Voucher({ venta, onCerrar }) {
 
 export default Voucher;
 
+

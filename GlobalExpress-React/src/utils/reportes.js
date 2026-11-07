@@ -302,3 +302,4 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
     }),
   };
 }
+
