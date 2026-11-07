@@ -39,3 +39,4 @@ export const listarDetallesVenta = async (idVenta) => {
     subtotal: Number(d.subtotal),
   }));
 };
+

@@ -17,3 +17,4 @@ export const listarProductos = async () => {
   const datos = await peticion('/productos');
   return datos.map(desdeApiProducto);
 };
+

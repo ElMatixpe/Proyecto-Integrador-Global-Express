@@ -92,7 +92,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     if (!guardando) setVentaPorEliminar(null);
   };
 
-  // DELETE /api/ventas/{id}: borra la venta y su detalle de la base de datos. No se puede deshacer.
+  // DELETE /api/ventas/{id}: borra la venta y su detalle de la base de datos. No se puede deshacer
   const eliminarDefinitivo = async () => {
     setGuardando(true);
     setErrorEliminacion('');
@@ -173,7 +173,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const seguirConVenta = () => setModalCancelar(false);
 
   // Envía la venta al backend (POST /api/ventas). El servidor toma los precios de la
-  // base de datos, calcula el total y guarda la venta con su detalle.
+  // base de datos, calcula el total y guarda la venta con su detalle
   const enviarVenta = async (estado) => {
     const creada = await peticion('/ventas', {
       metodo: 'POST',

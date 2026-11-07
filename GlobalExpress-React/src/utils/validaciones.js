@@ -10,7 +10,7 @@ export const soloNombre = (valor, max = 50) =>
     .replace(/\s{2,}/g, ' ')
     .slice(0, max);
 
-// Nombre de producto o marca: letras, números, espacios y . - & ' % /
+// Nombre de producto o marca: letras, números, espacios algunos caracteres especiales
 export const textoProducto = (valor, max = 50) =>
   valor
     .replace(new RegExp(`[^${LETRAS}0-9\\s.&'%/-]`, 'g'), '')
