@@ -7,8 +7,8 @@ import { moneda } from '../../utils/reportes';
 import logo from '../../Imagenes/logo.jpg';
 import './Voucher.css';
 
-// Documento del voucher. Se dibuja dos veces en la vista previa del modal y en una copia
-// oculta que es la que realmente se imprime 
+// Documento del voucher. Se dibuja dos veces: en la vista previa del modal y en una copia
+// oculta que es la que realmente se imprime (así el PDF sale limpio, sin ventanas encima).
 function Documento({ venta, detalles }) {
   const cancelada = venta.estado === 'Cancelado';
   return (
@@ -44,7 +44,7 @@ function Documento({ venta, detalles }) {
       <table className="voucher-tabla">
         <thead>
           <tr>
-            <th>Código</th>
+            <th>ID</th>
             <th>Producto</th>
             <th className="voucher-num">Cant.</th>
             <th className="voucher-num">P. Unit.</th>
@@ -74,7 +74,7 @@ function Documento({ venta, detalles }) {
 
       <div className="voucher-pie">
         <p>¡Gracias por su compra!</p>
-        <small>Comprobante de venta valida ante SUNAT.</small>
+        <small>Comprobante interno de venta. No es una factura electrónica válida ante SUNAT.</small>
       </div>
     </div>
   );
@@ -96,10 +96,10 @@ function Voucher({ venta, onCerrar }) {
     };
   }, [venta.id]);
 
-  const descargar = () => imprimirDocumento('voucher', `Voucher ${venta.codigo} - ${venta.cliente}`);
+  const descargar = () => imprimirDocumento('voucher', `Voucher N° ${venta.codigo} - ${venta.cliente}`);
 
   return (
-    <Modal titulo={`Voucher ${venta.codigo}`} onCerrar={onCerrar} ancho={780}>
+    <Modal titulo={`Voucher N° ${venta.codigo}`} onCerrar={onCerrar} ancho={780}>
       {cargando && <p className="voucher-estado">Cargando datos de la venta...</p>}
       {error && <p className="voucher-estado voucher-estado-error" role="alert">{error}</p>}
 

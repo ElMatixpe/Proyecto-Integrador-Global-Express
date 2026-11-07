@@ -43,7 +43,9 @@ public class ProductoService {
     public Producto actualizar(Integer id, Producto datos) {
         validar(datos);
         Producto existente = obtener(id);
+        String marcaOriginal = existente.getMarca();
         copiar(datos, existente);
+        existente.setMarca(marcaOriginal); // la marca no se puede modificar una vez creado el producto
         return productoRepository.save(existente);
     }
 

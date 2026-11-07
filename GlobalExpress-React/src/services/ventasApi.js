@@ -1,16 +1,18 @@
 import { peticion } from './api';
 import { codigoDeProducto } from './productosApi';
 
-// En la base de datos la venta tiene un id numérico (id_venta)
-// En pantalla se muestra como codigo: V0004.
-export const codigoDeVenta = (id) => `V${String(id).padStart(4, '0')}`;
+// En la base de datos la venta tiene un id numérico (id_venta).
+// En pantalla se muestra el id tal como está en la base de datos, sin prefijos: 4, 15...
+export const codigoDeVenta = (id) => String(id);
 
+// El servidor envía la fecha como "2026-10-10T15:30:12": se muestra como 10/10/2026
 const formatearFecha = (iso) => {
   const [anio, mes, dia] = String(iso).slice(0, 10).split('-');
   return `${dia}/${mes}/${anio}`;
 };
 
 // Consulta 1 (venta + usuario): { idVenta, fecha, cliente, metodoPago, estado, total, vendedor }
+// (al registrar una venta el servidor responde con usuario:{nombre,...} en vez de vendedor)
 export const desdeApiVenta = (v) => ({
   id: v.idVenta,
   codigo: codigoDeVenta(v.idVenta),

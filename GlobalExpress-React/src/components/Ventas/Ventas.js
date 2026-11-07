@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
 import Voucher from './Voucher';
 import { SearchIcon } from '../Icons/icons';
-import { soloNombre, soloEnteros, codigoProducto } from '../../utils/validaciones';
+import { soloNombre, soloEnteros } from '../../utils/validaciones';
 import { peticion } from '../../services/api';
 import { desdeApiVenta, listarDetallesVenta } from '../../services/ventasApi';
 import { puedeEliminarVentas } from '../../utils/permisos';
 import './Ventas.css';
 
-// solo pago en efectivo 
+// Por ahora solo se acepta pago en efectivo (Tarjeta, Yape y Plin aún no están implementados)
 const METODOS_PAGO = ['Efectivo'];
 
 const FILTROS = [
@@ -22,14 +22,14 @@ const moneda = (n) => `S/ ${Number(n).toFixed(2)}`;
 function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, onReintentar }) {
   const [vista, setVista] = useState('historial'); // 'historial' | 'nueva'
 
-  // Historial 
+  // ---- Historial ----
   const [busqueda, setBusqueda] = useState('');
   const [filtro, setFiltro] = useState('exito');
 
   const ventasFiltradas = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
     return [...ventas]
-      .sort((a, b) => b.codigo.localeCompare(a.codigo))
+      .sort((a, b) => b.id - a.id)
       .filter((v) => {
         if (filtro === 'exito' && v.estado !== 'Pagado') return false;
         if (filtro === 'cancelado' && v.estado !== 'Cancelado') return false;
@@ -37,7 +37,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       });
   }, [ventas, busqueda, filtro]);
 
-  // Nueva venta 
+  // ---- Nueva venta ----
   const [cliente, setCliente] = useState('');
   const [metodoPago, setMetodoPago] = useState('Efectivo');
   const [carrito, setCarrito] = useState([]);
@@ -48,7 +48,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
   const [guardando, setGuardando] = useState(false);
   const [voucherVenta, setVoucherVenta] = useState(null); // venta cuyo voucher se está viendo
 
-  // Cancelar una venta ya registrada (eliminación lógica) 
+  // ---- Cancelar una venta ya registrada (eliminación lógica) ----
   const [ventaPorCancelar, setVentaPorCancelar] = useState(null);
   const [errorCancelacion, setErrorCancelacion] = useState('');
 
@@ -68,7 +68,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       setVentaDetalle((actual) => (actual && actual.id === actualizada.id ? actualizada : actual));
       setVentaPorCancelar(null);
       setBusqueda('');
-      setFiltro('cancelado'); 
+      setFiltro('cancelado'); // para ver de inmediato la venta cancelada
     } catch (err) {
       setErrorCancelacion(err.message);
     } finally {
@@ -76,7 +76,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // Eliminar una venta cancelada de forma permanente (eliminación física, solo Administrador) 
+  // ---- Eliminar una venta cancelada de forma permanente (eliminación física, solo Administrador) ----
   const [ventaPorEliminar, setVentaPorEliminar] = useState(null);
   const [confirmacionTexto, setConfirmacionTexto] = useState('');
   const [errorEliminacion, setErrorEliminacion] = useState('');
@@ -110,7 +110,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // Detalle de una venta 
+  // ---- Detalle de una venta (consulta 2: detalle_venta + producto) ----
   const [ventaDetalle, setVentaDetalle] = useState(null);
   const [detalles, setDetalles] = useState([]);
   const [cargandoDetalle, setCargandoDetalle] = useState(false);
@@ -130,10 +130,10 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     }
   };
 
-  // Modal agregar producto 
+  // ---- Modal agregar producto ----
   const [modalProductos, setModalProductos] = useState(false);
   const [busquedaProd, setBusquedaProd] = useState('');
-  const [cantidades, setCantidades] = useState({}); // { P001: 2 }
+  const [cantidades, setCantidades] = useState({}); // { 1: 2 } (id del producto -> cantidad)
 
   const total = carrito.reduce((suma, i) => suma + i.precio * i.cantidad, 0);
 
@@ -250,6 +250,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
     setCarrito((actual) => actual.map((i) => (i.codigo === codigo ? { ...i, cantidad } : i)));
   };
 
+  // Al salir del campo, una cantidad vacía o 0 vuelve a 1.
   const normalizarCantidad = (codigo) => {
     setCarrito((actual) =>
       actual.map((i) => (i.codigo === codigo && !(i.cantidad >= 1) ? { ...i, cantidad: 1 } : i))
@@ -316,7 +317,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 type="text"
                 placeholder="Búsqueda por Id de Venta"
                 value={busqueda}
-                onChange={(e) => setBusqueda(codigoProducto(e.target.value, 5))}
+                onChange={(e) => setBusqueda(soloEnteros(e.target.value))}
               />
             </div>
 
@@ -344,17 +345,22 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
             </div>
           )}
 
+          <p className="ventas-consulta-info">
+            <strong>Consulta 1:</strong> tabla <code>venta</code> (id, fecha, cliente, método de pago,
+            total, estado) + tabla <code>usuario</code> (nombre del vendedor).
+          </p>
+
           <div className="ventas-table-container ventas-tabla-scroll">
             <table className="ventas-table">
               <thead>
                 <tr>
-                  <th>Codigo</th>
-                  <th>Fecha</th>
-                  <th>Cliente</th>
-                  <th>Vendedor</th>
-                  <th>Metodo de Pago</th>
-                  <th>Total</th>
-                  <th>Estado</th>
+                  <th>ID<small>venta</small></th>
+                  <th>Fecha<small>venta</small></th>
+                  <th>Cliente<small>venta</small></th>
+                  <th>Vendedor<small>usuario</small></th>
+                  <th>Metodo de Pago<small>venta</small></th>
+                  <th>Total<small>venta</small></th>
+                  <th>Estado<small>venta</small></th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -437,7 +443,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
           {ventaDetalle && (
             <section className="ventas-detalle">
               <div className="ventas-detalle-header">
-                <h3>Detalle de la venta {ventaDetalle.codigo}</h3>
+                <h3>Detalle de la venta N° {ventaDetalle.codigo}</h3>
                 <button
                   type="button"
                   className="ventas-btn-cancelar"
@@ -446,6 +452,11 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                   Cerrar detalle
                 </button>
               </div>
+
+              <p className="ventas-consulta-info">
+                <strong>Consulta 2:</strong> tabla <code>detalle_venta</code> (cantidad, precio unitario,
+                subtotal) + tabla <code>producto</code> (id, nombre, marca).
+              </p>
 
               {errorDetalle && (
                 <p className="ventas-error" role="alert">
@@ -457,12 +468,12 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                 <table className="ventas-table">
                   <thead>
                     <tr>
-                      <th>Código</th>
-                      <th>Producto</th>
-                      <th>Marca</th>
-                      <th>Cantidad</th>
-                      <th>Precio unit.</th>
-                      <th>Subtotal</th>
+                      <th>ID<small>producto</small></th>
+                      <th>Producto<small>producto</small></th>
+                      <th>Marca<small>producto</small></th>
+                      <th>Cantidad<small>detalle_venta</small></th>
+                      <th>Precio unit.<small>detalle_venta</small></th>
+                      <th>Subtotal<small>detalle_venta</small></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -634,9 +645,10 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
               <SearchIcon size={16} color="#777" />
               <input
                 type="text"
-                placeholder="Buscar por Id de producto (ej. P001)"
+                inputMode="numeric"
+                placeholder="Buscar por Id de producto (ej. 1)"
                 value={busquedaProd}
-                onChange={(e) => setBusquedaProd(codigoProducto(e.target.value))}
+                onChange={(e) => setBusquedaProd(soloEnteros(e.target.value))}
                 autoFocus
               />
               {busquedaProd && (
@@ -665,7 +677,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
                   className={`ventas-modal-item${disponible ? '' : ' ventas-modal-item-off'}`}
                 >
                   <div className="ventas-modal-info">
-                    <span className="ventas-modal-codigo">{p.codigo}</span>
+                    <span className="ventas-modal-codigo">ID {p.codigo}</span>
                     <span className="ventas-modal-nombre">{p.nombre}</span>
                     <span className="ventas-modal-detalle">
                       {p.marca} · {moneda(p.precio)}
@@ -697,7 +709,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
             })}
 
             {productosModal.length === 0 && (
-              <p className="ventas-vacio">No se encontraron productos con ese código.</p>
+              <p className="ventas-vacio">No se encontraron productos con ese ID.</p>
             )}
           </div>
 
@@ -766,7 +778,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
       {ventaPorCancelar && (
         <Modal titulo="Cancelar venta" onCerrar={() => setVentaPorCancelar(null)}>
           <p className="ventas-cancelar-texto">
-            ¿Seguro que deseas cancelar la venta <strong>{ventaPorCancelar.codigo}</strong> de{' '}
+            ¿Seguro que deseas cancelar la venta <strong>N° {ventaPorCancelar.codigo}</strong> de{' '}
             <strong>{ventaPorCancelar.cliente}</strong> por <strong>{moneda(ventaPorCancelar.total)}</strong>?
             La venta no se borra: quedará como <strong>Cancelado</strong> en el historial y dejará de
             contar como ingreso.
@@ -801,7 +813,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
           <div className="ventas-alerta-eliminar" role="alert">
             <strong>⚠ Esta acción es permanente y no se puede deshacer.</strong>
             <p>
-              Se borrará de la base de datos la venta <strong>{ventaPorEliminar.codigo}</strong> de{' '}
+              Se borrará de la base de datos la venta <strong>N° {ventaPorEliminar.codigo}</strong> de{' '}
               <strong>{ventaPorEliminar.cliente}</strong> por{' '}
               <strong>{moneda(ventaPorEliminar.total)}</strong>, junto con todos los productos de su
               detalle. Dejará de aparecer en el historial y no podrá recuperarse.
@@ -809,12 +821,13 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
           </div>
           <label className="ventas-campo ventas-confirmar-campo">
             <span>
-              Para confirmar, escribe el código <strong>{ventaPorEliminar.codigo}</strong>:
+              Para confirmar, escribe el ID <strong>{ventaPorEliminar.codigo}</strong>:
             </span>
             <input
               type="text"
               value={confirmacionTexto}
-              onChange={(e) => setConfirmacionTexto(codigoProducto(e.target.value, 5))}
+              onChange={(e) => setConfirmacionTexto(soloEnteros(e.target.value))}
+              inputMode="numeric"
               placeholder={ventaPorEliminar.codigo}
               autoFocus
             />
@@ -837,7 +850,7 @@ function Ventas({ usuario, ventas, setVentas, productos, cargando, errorCarga, o
               className="ventas-btn-peligro"
               type="button"
               onClick={eliminarDefinitivo}
-              disabled={guardando || confirmacionTexto.trim().toUpperCase() !== ventaPorEliminar.codigo}
+              disabled={guardando || confirmacionTexto.trim() !== ventaPorEliminar.codigo}
             >
               {guardando ? 'Eliminando...' : 'Eliminar para siempre'}
             </button>

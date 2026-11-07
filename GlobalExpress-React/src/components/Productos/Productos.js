@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
 import Modal from '../Modales/Modales';
 import { SearchIcon } from '../Icons/icons';
-import { textoProducto, soloDecimal, codigoProducto } from '../../utils/validaciones';
+import { textoProducto, soloDecimal, soloEnteros } from '../../utils/validaciones';
 import { peticion } from '../../services/api';
 import { desdeApiProducto } from '../../services/productosApi';
 import './Productos.css';
 
 const PRODUCTO_VACIO = { nombre: '', marca: '', estado: 'Disponible', precio: '' };
 
+// El listado de productos vive en Home para compartirlo con el módulo de Ventas.
 function Productos({
   productos,
   setProductos,
@@ -20,7 +21,7 @@ function Productos({
   const [busqueda, setBusqueda] = useState('');
 
   const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoEditar, setProductoEditar] = useState(null); 
+  const [productoEditar, setProductoEditar] = useState(null); // null = "nuevo producto"
   const [form, setForm] = useState(PRODUCTO_VACIO);
   const [error, setError] = useState('');
   const [guardando, setGuardando] = useState(false);
@@ -127,9 +128,10 @@ function Productos({
         <SearchIcon size={16} color="#777" />
         <input
           type="text"
+          inputMode="numeric"
           placeholder="Búsqueda por Id de Producto"
           value={busqueda}
-          onChange={(e) => setBusqueda(codigoProducto(e.target.value))}
+          onChange={(e) => setBusqueda(soloEnteros(e.target.value))}
         />
       </div>
 
@@ -137,7 +139,7 @@ function Productos({
         <table className="productos-table">
           <thead>
             <tr>
-              <th>Codigo</th>
+              <th>ID</th>
               <th>Producto</th>
               <th>Marca</th>
               <th>Precio</th>
@@ -182,7 +184,7 @@ function Productos({
             {!cargando && !errorCarga && productosFiltrados.length === 0 && (
               <tr>
                 <td colSpan={columnas} className="productos-vacio">
-                  No se encontraron productos con ese código.
+                  No se encontraron productos con ese ID.
                 </td>
               </tr>
             )}
@@ -215,8 +217,13 @@ function Productos({
                   placeholder="Ej . CocaCola"
                   value={form.marca}
                   onChange={(e) => actualizarCampo('marca', textoProducto(e.target.value, 30))}
+                  disabled={Boolean(productoEditar)}
+                  title={productoEditar ? 'La marca no se puede modificar' : undefined}
                   required
                 />
+                {productoEditar && (
+                  <small className="productos-ayuda">La marca no se puede modificar.</small>
+                )}
               </label>
 
               <label className="productos-campo">
@@ -263,4 +270,3 @@ function Productos({
 }
 
 export default Productos;
-

@@ -282,3 +282,15 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Campo bloqueado (marca al editar) */
+.productos-campo input:disabled {
+  background-color: #eeeeee;
+  color: #777;
+  cursor: not-allowed;
+}
+
+.productos-ayuda {
+  font-size: 0.75rem;
+  color: #777;
+}
