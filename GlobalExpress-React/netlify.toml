@@ -1,0 +1,7 @@
+# Configuración de Netlify para el React (create-react-app)
+[build]
+  command = "CI=false npm run build"   # CI=false evita que Netlify trate los avisos de ESLint como errores
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "20"

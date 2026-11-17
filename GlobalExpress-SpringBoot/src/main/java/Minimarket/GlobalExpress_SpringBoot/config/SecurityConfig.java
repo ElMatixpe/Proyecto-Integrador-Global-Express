@@ -4,6 +4,7 @@ import Minimarket.GlobalExpress_SpringBoot.repository.UsuarioRepository;
 import Minimarket.GlobalExpress_SpringBoot.security.SesionService;
 import Minimarket.GlobalExpress_SpringBoot.security.TokenAuthFilter;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,6 +27,9 @@ public class SecurityConfig {
 
     private final SesionService sesionService;
     private final UsuarioRepository usuarioRepository;
+
+    @Value("${app.cors.allowed-origins:http://localhost:3000}")
+    private List<String> allowedOrigins;
 
     public SecurityConfig(SesionService sesionService, UsuarioRepository usuarioRepository) {
         this.sesionService = sesionService;
@@ -60,7 +64,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
 
