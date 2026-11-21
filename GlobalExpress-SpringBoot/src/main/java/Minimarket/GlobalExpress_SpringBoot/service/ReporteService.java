@@ -28,9 +28,9 @@ public class ReporteService {
     private final DetalleVentaRepository detalleVentaRepository;
 
     public ReporteService(ReporteRepository reporteRepository,
-                            UsuarioRepository usuarioRepository,
-                            VentaRepository ventaRepository,
-                            DetalleVentaRepository detalleVentaRepository) {
+                          UsuarioRepository usuarioRepository,
+                          VentaRepository ventaRepository,
+                          DetalleVentaRepository detalleVentaRepository) {
         this.reporteRepository = reporteRepository;
         this.usuarioRepository = usuarioRepository;
         this.ventaRepository = ventaRepository;
@@ -48,8 +48,11 @@ public class ReporteService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Reporte", id));
     }
 
-    /** Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los indicadores
-     * del reporte: el React calcula con ellas los 4 indicadores */
+    /**
+     * Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los indicadores
+     * del reporte: el React calcula con ellas el porcentaje de ventas por mes, la participación
+     * por producto, la variación mensual, el ticket promedio y las tarjetas de resumen.
+     */
     @Transactional(readOnly = true)
     public List<VentaReporteDto> ventasDelPeriodo(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) {
@@ -102,7 +105,7 @@ public class ReporteService {
         }
         Usuario usuario = usuarioRepository.findById(req.idUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario", req.idUsuario()));
-        Venta venta = null; 
+        Venta venta = null; // la venta es opcional
         if (req.idVenta() != null) {
             venta = ventaRepository.findById(req.idVenta())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Venta", req.idVenta()));

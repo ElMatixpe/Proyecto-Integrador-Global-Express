@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/** Una venta con su detalle, para el módulo de Reportes: sirve para calcular los indicadores y para
- * el reporte de "Registro de ventas por rango de fechas" (cliente, metodo de pago y vendedor) */
+/**
+ * Una venta con su detalle, para el módulo de Reportes: sirve para calcular los indicadores y para
+ * el reporte de "Registro de ventas por rango de fechas" (cliente, método de pago y vendedor).
+ */
 public record VentaReporteDto(
         Integer idVenta,
         LocalDateTime fecha,

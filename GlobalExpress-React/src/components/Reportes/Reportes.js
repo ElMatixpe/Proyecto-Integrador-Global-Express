@@ -43,13 +43,13 @@ function Reportes({ usuario }) {
   const [indicadorActivo, setIndicadorActivo] = useState(3);
   const vistaPrevia = useRef(null);
 
-  // Ventas que vienen de la base de datos. Se piden desde el inicio del mes anterior al período
+  // Ventas que vienen de MySQL. Se piden desde el inicio del mes anterior al período
   // para poder calcular la variación del primer mes.
   const [ventasBase, setVentasBase] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState('');
   const [intento, setIntento] = useState(0);
-  const [avisoRegistro, setAvisoRegistro] = useState(null); 
+  const [avisoRegistro, setAvisoRegistro] = useState(null); // { tipo: 'ok' | 'error', texto }
 
   const errorPeriodo = !desde || !hasta
     ? 'Selecciona la fecha de inicio y la fecha de fin.'
@@ -59,7 +59,7 @@ function Reportes({ usuario }) {
 
   useEffect(() => {
     if (errorPeriodo) return undefined;
-    let vigente = true; 
+    let vigente = true; // evita que una respuesta vieja pise a una más reciente
     setCargando(true);
     setErrorCarga('');
     const { inicio, fin } = rangoConsulta(desde, hasta);
@@ -269,6 +269,7 @@ function Reportes({ usuario }) {
         </div>
       )}
 
+      {/* Tarjetas de resumen del período */}
       <div className="reportes-kpis">
         {tarjetas.map((t) => (
           <div key={t.etiqueta} className={`reportes-kpi reportes-kpi-${t.color}`}>

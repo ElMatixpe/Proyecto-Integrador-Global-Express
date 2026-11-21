@@ -285,6 +285,7 @@
   .reportes-preview-header { flex-direction: column; align-items: stretch; }
 }
 
+/* ---------- Impresión / PDF ---------- */
 /* La copia imprimible vive fuera de la aplicación y está oculta en pantalla */
 .reportes-print { display: none; }
 
@@ -305,7 +306,7 @@
     border: none;
   }
 
-  body[data-imprimir="reporte"] .reportes-tabla thead { display: table-header-group; } 
+  body[data-imprimir="reporte"] .reportes-tabla thead { display: table-header-group; } /* repite el encabezado en cada hoja */
 
   body[data-imprimir="reporte"] .reportes-tabla thead th {
     position: static;
