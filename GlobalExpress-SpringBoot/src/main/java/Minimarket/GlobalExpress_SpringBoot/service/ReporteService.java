@@ -28,9 +28,9 @@ public class ReporteService {
     private final DetalleVentaRepository detalleVentaRepository;
 
     public ReporteService(ReporteRepository reporteRepository,
-            UsuarioRepository usuarioRepository,
-            VentaRepository ventaRepository,
-            DetalleVentaRepository detalleVentaRepository) {
+                            UsuarioRepository usuarioRepository,
+                            VentaRepository ventaRepository,
+                            DetalleVentaRepository detalleVentaRepository) {
         this.reporteRepository = reporteRepository;
         this.usuarioRepository = usuarioRepository;
         this.ventaRepository = ventaRepository;
@@ -48,8 +48,8 @@ public class ReporteService {
                 .orElseThrow(() -> new RecursoNoEncontradoException("Reporte", id));
     }
 
-    /* Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los 4
-     * indicadores del reporte */
+    /** Ventas (con su detalle) entre dos fechas, ambas incluidas. Es la base de los indicadores
+     * del reporte: el React calcula con ellas los 4 indicadores */
     @Transactional(readOnly = true)
     public List<VentaReporteDto> ventasDelPeriodo(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) {
@@ -61,7 +61,8 @@ public class ReporteService {
         LocalDateTime inicio = desde.atStartOfDay();
         LocalDateTime fin = hasta.plusDays(1).atStartOfDay();
 
-        List<Venta> ventas = ventaRepository.findByFechaGreaterThanEqualAndFechaLessThanOrderByFechaAsc(inicio, fin);
+        List<Venta> ventas =
+                ventaRepository.findByFechaGreaterThanEqualAndFechaLessThanOrderByFechaAsc(inicio, fin);
 
         Map<Integer, List<DetalleReporteDto>> detallesPorVenta = detalleVentaRepository
                 .findByVentaFechaGreaterThanEqualAndVentaFechaLessThan(inicio, fin)
@@ -81,8 +82,11 @@ public class ReporteService {
                 .map(v -> new VentaReporteDto(
                         v.getIdVenta(),
                         v.getFecha(),
+                        v.getCliente(),
+                        v.getMetodoPago(),
                         v.getEstado(),
                         v.getTotal(),
+                        v.getUsuario().getNombre(),
                         detallesPorVenta.getOrDefault(v.getIdVenta(), List.of())))
                 .toList();
     }
@@ -98,7 +102,7 @@ public class ReporteService {
         }
         Usuario usuario = usuarioRepository.findById(req.idUsuario())
                 .orElseThrow(() -> new RecursoNoEncontradoException("Usuario", req.idUsuario()));
-        Venta venta = null; // la venta es opcional
+        Venta venta = null; 
         if (req.idVenta() != null) {
             venta = ventaRepository.findById(req.idVenta())
                     .orElseThrow(() -> new RecursoNoEncontradoException("Venta", req.idVenta()));

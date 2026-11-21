@@ -17,6 +17,7 @@
   color: #666;
 }
 
+/* Control por fechas */
 .reportes-periodo {
   display: flex;
   flex-wrap: wrap;
@@ -113,10 +114,10 @@
   color: #1a1a1a;
 }
 
-/*Tarjetas de indicadores */
+/* Tarjetas de indicadores */
 .reportes-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap: 1.1rem;
   margin-bottom: 2rem;
 }
@@ -153,6 +154,7 @@
 .reportes-icono-naranja { background-color: #fef0e6; }
 .reportes-icono-morado { background-color: #f3e8ff; }
 .reportes-icono-amarillo { background-color: #fef9c3; }
+.reportes-icono-verde { background-color: #e1f5ee; }
 
 .reportes-card-titulo {
   margin: 0;
@@ -192,7 +194,7 @@
 
 .reportes-btn:hover { background-color: #3f42c7; }
 
-/*Vista previa del documento */
+/* Vista previa del documento */
 .reportes-preview {
   background: #fff;
   border: 1px solid #e5e5e5;
@@ -230,7 +232,18 @@
 .reportes-pdf-tipo { margin-top: 0.3rem; font-size: 0.85rem; font-weight: 700; color: #3c4043; }
 .reportes-pdf-meta { margin-bottom: 1.2rem; font-size: 0.75rem; color: #777; }
 
-.reportes-tabla-scroll { overflow-x: auto; }
+/* Tabla con scroll: se desplaza hacia abajo cuando hay muchos registros y el encabezado queda fijo */
+.reportes-tabla-scroll {
+  max-height: 440px;
+  overflow: auto;
+  border: 1px solid #eee;
+}
+
+.reportes-tabla thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
 
 .reportes-tabla {
   width: 100%;
@@ -256,6 +269,13 @@
 .reportes-positivo { color: #188038 !important; font-weight: 700; }
 .reportes-negativo { color: #c0392b !important; font-weight: 700; }
 
+.reportes-pie {
+  margin: 0.8rem 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #3c4043;
+}
+
 @media (max-width: 1000px) {
   .reportes-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -265,71 +285,39 @@
   .reportes-preview-header { flex-direction: column; align-items: stretch; }
 }
 
+/* La copia imprimible vive fuera de la aplicación y está oculta en pantalla */
+.reportes-print { display: none; }
+
 @media print {
-
-  @page {
-    size: A4 portrait;
-    margin: 15mm;
-  }
-
-  body[data-imprimir="reporte"] * {
-    visibility: hidden;
-  }
-
-  body[data-imprimir="reporte"] .reportes-pdf,
-  body[data-imprimir="reporte"] .reportes-pdf * {
-    visibility: visible;
-  }
+  /* Solo sale el documento: se oculta toda la aplicación (menú, tarjetas, etc.) */
+  body[data-imprimir="reporte"] #root { display: none !important; }
+  body[data-imprimir="reporte"] .reportes-print { display: block; }
 
   body[data-imprimir="reporte"] .reportes-pdf {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
     border: none;
     padding: 0;
-    margin: 0;
-    box-shadow: none;
-    font-size: 10px;
   }
 
-  body[data-imprimir="reporte"] .reportes-pdf-meta {
-    margin-bottom: 8px;
-    font-size: 9px;
+  /* El PDF debe incluir TODAS las filas: sin scroll y con la tabla compacta */
+  body[data-imprimir="reporte"] .reportes-tabla-scroll {
+    max-height: none;
+    overflow: visible;
+    border: none;
   }
 
-  body[data-imprimir="reporte"] .reportes-pdf-empresa {
-    font-size: 13px;
-  }
+  body[data-imprimir="reporte"] .reportes-tabla thead { display: table-header-group; } 
 
-  body[data-imprimir="reporte"] .reportes-pdf-tipo {
-    font-size: 11px;
-  }
-
-  body[data-imprimir="reporte"] .reportes-tabla {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: auto;
-  }
-
-  body[data-imprimir="reporte"] .reportes-tabla th {
-    font-size: 9px;
-    padding: 5px 6px;
+  body[data-imprimir="reporte"] .reportes-tabla thead th {
+    position: static;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 
+  body[data-imprimir="reporte"] .reportes-tabla th,
   body[data-imprimir="reporte"] .reportes-tabla td {
-    font-size: 9px;
-    padding: 5px 6px;
+    font-size: 9pt;
+    padding: 4px 6px;
   }
 
-  body[data-imprimir="reporte"] .reportes-tabla tr {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-
-  body[data-imprimir="reporte"] .reportes-tabla-scroll {
-    overflow: visible;
-  }
+  body[data-imprimir="reporte"] .reportes-tabla tr { break-inside: avoid; }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { listarVentasReporte, registrarReporte } from '../../services/reportesApi';
 import { imprimirDocumento } from '../../utils/imprimir';
 import {
@@ -8,24 +9,25 @@ import {
   fechaCorta,
   filtrarPorPeriodo,
   generarReporte,
-  inicioMesAnterior,
   moneda,
+  rangoConsulta,
 } from '../../utils/reportes';
 import { TrendIcon, BoxIcon, BarsIcon, CoinIcon, FileIcon } from '../Icons/icons';
 import './Reportes.css';
 
-//Icono de cada indicador
+// Icono de cada indicador
 const ICONOS = {
   tendencia: <TrendIcon />,
   caja: <BoxIcon color="#f26522" size={22} />,
   barras: <BarsIcon />,
   moneda: <CoinIcon />,
+  lista: <FileIcon color="#0f766e" size={22} />,
 };
 
-//Variaciones: "+13.89%" en verde, "-4.10%" en rojo
+// Variaciones: "+13.89%" en verde, "-4.10%" en rojo
 const claseCelda = (celda) => {
   if (celda.startsWith('+')) return 'reportes-positivo';
-  if (/^-\d/.test(celda)) return 'reportes-negativo';
+  if (/^-\d/.test(celda) || celda === 'Cancelado') return 'reportes-negativo';
   return '';
 };
 
@@ -35,13 +37,13 @@ function Reportes({ usuario }) {
   const hoyFecha = useMemo(() => new Date(), []);
   const hoy = aISO(hoyFecha);
 
-  // Periodo del reporte (equivale a periodoInicio / periodoFin de la tabla reporte)
+  // Período del reporte (equivale a periodoInicio / periodoFin de la tabla reporte)
   const [desde, setDesde] = useState(primerDiaDeMes(hoyFecha, 2));
   const [hasta, setHasta] = useState(hoy);
   const [indicadorActivo, setIndicadorActivo] = useState(3);
   const vistaPrevia = useRef(null);
 
-  // Ventas que vienen de MySQL. Se piden desde el inicio del mes anterior al período
+  // Ventas que vienen de la base de datos. Se piden desde el inicio del mes anterior al período
   // para poder calcular la variación del primer mes.
   const [ventasBase, setVentasBase] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -60,7 +62,8 @@ function Reportes({ usuario }) {
     let vigente = true; 
     setCargando(true);
     setErrorCarga('');
-    listarVentasReporte(inicioMesAnterior(desde), hasta)
+    const { inicio, fin } = rangoConsulta(desde, hasta);
+    listarVentasReporte(inicio, fin)
       .then((datos) => vigente && setVentasBase(datos))
       .catch((err) => vigente && setErrorCarga(err.message))
       .finally(() => vigente && setCargando(false));
@@ -108,7 +111,9 @@ function Reportes({ usuario }) {
   };
 
   // exportarPDF: primero registra el reporte en la base de datos (quién, cuándo y qué período)
-  // y luego exporta solo el documento pdf.
+  // y luego imprime solo el documento (ver @media print en Reportes.css).
+  // En el cuadro de impresión se elige "Guardar como PDF".
+  // Si el registro falla, el PDF igual se genera y se avisa del problema.
   const descargarPdf = async () => {
     if (errorPeriodo) return;
     setAvisoRegistro(null);
@@ -167,6 +172,53 @@ function Reportes({ usuario }) {
     },
   ];
 
+  // Documento del reporte. Se dibuja dos veces: en la vista previa y en una copia oculta que es la que se imprime,
+  // así el PDF sale completo (todas las filas, en varias hojas si hace falta) y sin el menú de la aplicación.
+  const documento = (
+    <div className="reportes-pdf">
+      <div className="reportes-pdf-empresa">GLOBALEXPRESS MINIMARKET</div>
+      <div className="reportes-pdf-tipo">{indicador.titulo}</div>
+      <div className="reportes-pdf-meta">
+        {errorPeriodo ? 'Período no válido' : `Período: ${fechaCorta(desde)} al ${fechaCorta(hasta)}`}
+        {' | '}Fecha de emisión: {fechaCorta(hoy)} | Generado por: {usuario?.nombre}
+      </div>
+
+      <div className="reportes-tabla-scroll">
+        <table className="reportes-tabla">
+          <thead>
+            <tr>
+              {reporte.columnas.map((col) => (
+                <th key={col}>{col}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {reporte.filas.map((fila, n) => (
+              <tr key={n}>
+                {fila.map((celda, i) => (
+                  <td key={i} className={claseCelda(celda)}>
+                    {celda}
+                  </td>
+                ))}
+              </tr>
+            ))}
+
+            {reporte.filas.length === 0 && (
+              <tr>
+                <td colSpan={Math.max(reporte.columnas.length, 1)} className="reportes-vacio">
+                  No hay ventas en el período seleccionado.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {reporte.pie && <p className="reportes-pie">{reporte.pie}</p>}
+      {reporte.hayMesParcial && reporte.nota && <p className="reportes-nota">{reporte.nota}</p>}
+    </div>
+  );
+
   return (
     <div className="reportes">
       <h2 className="reportes-titulo">Módulo de Reportes e Indicadores</h2>
@@ -179,11 +231,11 @@ function Reportes({ usuario }) {
         <div className="reportes-periodo-campos">
           <label className="reportes-fecha">
             <span>Desde</span>
-            <input type="date" value={desde} max={hoy} onChange={(e) => setDesde(e.target.value)} />
+            <input type="date" value={desde} max={hasta && hasta < hoy ? hasta : hoy} onChange={(e) => setDesde(e.target.value)} />
           </label>
           <label className="reportes-fecha">
             <span>Hasta</span>
-            <input type="date" value={hasta} max={hoy} onChange={(e) => setHasta(e.target.value)} />
+            <input type="date" value={hasta} min={desde || undefined} max={hoy} onChange={(e) => setHasta(e.target.value)} />
           </label>
         </div>
 
@@ -217,7 +269,6 @@ function Reportes({ usuario }) {
         </div>
       )}
 
-      {/* Tarjetas de resumen del período */}
       <div className="reportes-kpis">
         {tarjetas.map((t) => (
           <div key={t.etiqueta} className={`reportes-kpi reportes-kpi-${t.color}`}>
@@ -268,51 +319,12 @@ function Reportes({ usuario }) {
           </p>
         )}
 
-        <div className="reportes-pdf">
-          <div className="reportes-pdf-empresa">GLOBAL EXPRESS MINIMARKET</div>
-          <div className="reportes-pdf-tipo">{indicador.titulo}</div>
-          <div className="reportes-pdf-meta">
-            {errorPeriodo ? 'Período no válido' : `Período: ${fechaCorta(desde)} al ${fechaCorta(hasta)}`}
-            {' | '}Fecha de emisión: {fechaCorta(hoy)} | Generado por: {usuario?.nombre}
-          </div>
-
-          <div className="reportes-tabla-scroll">
-            <table className="reportes-tabla">
-              <thead>
-                <tr>
-                  {reporte.columnas.map((col) => (
-                    <th key={col}>{col}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {reporte.filas.map((fila) => (
-                  <tr key={fila[0]}>
-                    {fila.map((celda, i) => (
-                      <td key={i} className={claseCelda(celda)}>
-                        {celda}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-
-                {reporte.filas.length === 0 && (
-                  <tr>
-                    <td colSpan={Math.max(reporte.columnas.length, 1)} className="reportes-vacio">
-                      No hay ventas en el período seleccionado.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-          {reporte.hayMesParcial && reporte.nota && <p className="reportes-nota">{reporte.nota}</p>}
-        </div>
+        {documento}
       </section>
+
+      {createPortal(<div className="reportes-print">{documento}</div>, document.body)}
     </div>
   );
 }
 
 export default Reportes;
-
-
