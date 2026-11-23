@@ -23,7 +23,6 @@ export const porcentaje = (n) => `${redondear(n).toFixed(2)}%`;
 const variacionTexto = (n) => `${redondear(n) > 0 ? '+' : ''}${redondear(n).toFixed(2)}%`;
 
 // Fechas (siempre texto 'AAAA-MM-DD' para evitar problemas de zona horaria) 
-
 export const aISO = (fecha) => {
   const mm = String(fecha.getMonth() + 1).padStart(2, '0');
   const dd = String(fecha.getDate()).padStart(2, '0');
@@ -171,6 +170,7 @@ const NOTA_PARCIAL = '* Mes parcial: solo incluye las ventas dentro del período
 export const INDICADORES = [
   {
     id: 1,
+    tipo: 'indicador',
     color: 'azul',
     icono: 'tendencia',
     titulo: 'Porcentaje de Ventas por Mes (%)',
@@ -178,6 +178,7 @@ export const INDICADORES = [
   },
   {
     id: 2,
+    tipo: 'indicador',
     color: 'naranja',
     icono: 'caja',
     titulo: 'Porcentaje de Participación del Producto en las ventas Mensuales (%)',
@@ -185,6 +186,7 @@ export const INDICADORES = [
   },
   {
     id: 3,
+    tipo: 'indicador',
     color: 'morado',
     icono: 'barras',
     titulo: 'Porcentaje de Variación de Ventas Mensual (%)',
@@ -192,6 +194,7 @@ export const INDICADORES = [
   },
   {
     id: 4,
+    tipo: 'indicador',
     color: 'amarillo',
     icono: 'moneda',
     titulo: 'Promedio de Venta Mensual por Operación',
@@ -199,16 +202,59 @@ export const INDICADORES = [
   },
   {
     id: 5,
+    tipo: 'reporte',
     color: 'verde',
     icono: 'lista',
     titulo: 'Registro de Ventas por Rango de Fechas',
     descripcion: 'Lista todas las ventas realizadas entre las fechas Desde y Hasta, con su detalle y total.',
   },
+  {
+    id: 6,
+    tipo: 'reporte',
+    color: 'azul',
+    icono: 'minmax',
+    titulo: 'Reporte de Venta Máxima, Mínima y Promedio',
+    descripcion: 'Lista las ventas pagadas del período y muestra debajo la venta de mayor ingreso, la de menor ingreso y el promedio.',
+  },
+  {
+    id: 7,
+    tipo: 'reporte',
+    color: 'rojo',
+    icono: 'cancelada',
+    titulo: 'Reporte de Ventas Canceladas',
+    descripcion: 'Lista las ventas canceladas del período (eliminación lógica) y cuenta cuántas se cancelaron.',
+  },
+  {
+    id: 8,
+    tipo: 'reporte',
+    color: 'verde',
+    icono: 'ingresos',
+    titulo: 'Reporte de Ingresos',
+    descripcion: 'Lista las ventas pagadas del período y muestra debajo el ingreso total que generaron.',
+  },
 ];
 
+// Columnas y filas del listado de ventas (se usan en los reportes 6, 7 y 8)
+const COLUMNAS_LISTADO = ['N°', 'Fecha', 'Hora', 'Cliente', 'Vendedor', 'Método de Pago', 'Total (S/)'];
+
+const filasListado = (lista) =>
+  lista.map((v) => [
+    String(v.id),
+    fechaCorta(v.fecha),
+    v.fecha.slice(11, 16),
+    v.cliente || '—',
+    v.vendedor || '—',
+    v.metodoPago || '—',
+    moneda(v.total),
+  ]);
+
+const ordenCronologico = (ventas) => [...ventas].sort((a, b) => a.fecha.localeCompare(b.fecha) || a.id - b.id);
+
+const textoVenta = (v) => `Venta N° ${v.id} · ${fechaCorta(v.fecha)} · ${v.cliente || 'sin cliente'}`;
+
 /** Devuelve { columnas, filas, hayMesParcial } del indicador pedido.
- * - ventasPeriodo: ventas dentro del rango de fechas elegido.
- * - todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación) */
+ * ventasPeriodo: ventas dentro del rango de fechas elegido.
+ * todasLasVentas: todas las ventas (sirve para tomar el mes anterior completo en la variación) */
 export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde, hasta) {
   const meses = mesesEntre(desde, hasta);
   const porMes = totalesPorMes(ventasPeriodo);
@@ -297,6 +343,81 @@ export function generarReporte(idIndicador, ventasPeriodo, todasLasVentas, desde
         v.estado,
         moneda(v.total),
       ]),
+    };
+  }
+
+  if (idIndicador === 6) {
+    // Máximo, mínimo y promedio: listado de las ventas PAGADAS del período y, debajo, los tres resultados
+    const lista = ordenCronologico(pagadas(ventasPeriodo));
+    const k = calcularKpis(ventasPeriodo);
+    const hay = k.cantidadPagadas > 0;
+    return {
+      hayMesParcial: false,
+      nota: '',
+      columnas: COLUMNAS_LISTADO,
+      filas: filasListado(lista),
+      resumen: [
+        {
+          etiqueta: 'Venta con máximo ingreso',
+          valor: hay ? moneda(k.maxima.total) : '—',
+          detalle: hay ? textoVenta(k.maxima) : 'Sin ventas pagadas en el período',
+        },
+        {
+          etiqueta: 'Venta con mínimo ingreso',
+          valor: hay ? moneda(k.minima.total) : '—',
+          detalle: hay ? textoVenta(k.minima) : 'Sin ventas pagadas en el período',
+        },
+        {
+          etiqueta: 'Promedio de las ventas',
+          valor: moneda(k.promedio),
+          detalle: hay
+            ? `${moneda(k.ingresos)} ÷ ${k.cantidadPagadas} ${k.cantidadPagadas === 1 ? 'venta pagada' : 'ventas pagadas'}`
+            : 'Sin ventas pagadas en el período',
+        },
+      ],
+    };
+  }
+
+  if (idIndicador === 7) {
+    // Eliminación lógica: ventas CANCELADAS del período, con el conteo de cuántas se cancelaron
+    const lista = ordenCronologico(ventasPeriodo.filter((v) => v.estado === 'Cancelado'));
+    const cantidad = lista.length;
+    const periodo = `del ${fechaCorta(desde)} al ${fechaCorta(hasta)}`;
+    const frase =
+      cantidad === 0
+        ? `No se canceló ninguna venta ${periodo}`
+        : cantidad === 1
+          ? `Se canceló 1 venta ${periodo}`
+          : `Se cancelaron ${cantidad} ventas ${periodo}`;
+    return {
+      hayMesParcial: false,
+      nota: '',
+      columnas: COLUMNAS_LISTADO,
+      filas: filasListado(lista),
+      resumen: [
+        { etiqueta: 'Ventas canceladas en el período', valor: String(cantidad), detalle: frase, destacado: true },
+        { etiqueta: 'Monto de las ventas canceladas', valor: moneda(suma(lista)), detalle: 'No se cobró ni suma a los ingresos' },
+      ],
+    };
+  }
+
+  if (idIndicador === 8) {
+    // Ingresos: listado de las ventas PAGADAS del período y, debajo, el ingreso total (suma de todas)
+    const lista = ordenCronologico(pagadas(ventasPeriodo));
+    const total = suma(lista);
+    return {
+      hayMesParcial: false,
+      nota: '',
+      columnas: COLUMNAS_LISTADO,
+      filas: filasListado(lista),
+      resumen: [
+        {
+          etiqueta: 'Ingreso total',
+          valor: moneda(total),
+          detalle: `Suma de ${lista.length} ${lista.length === 1 ? 'venta pagada' : 'ventas pagadas'} del ${fechaCorta(desde)} al ${fechaCorta(hasta)}`,
+          destacado: true,
+        },
+      ],
     };
   }
 

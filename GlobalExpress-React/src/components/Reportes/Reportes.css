@@ -155,6 +155,7 @@
 .reportes-icono-morado { background-color: #f3e8ff; }
 .reportes-icono-amarillo { background-color: #fef9c3; }
 .reportes-icono-verde { background-color: #e1f5ee; }
+.reportes-icono-rojo { background-color: #fdecea; }
 
 .reportes-card-titulo {
   margin: 0;
@@ -269,6 +270,38 @@
 .reportes-positivo { color: #188038 !important; font-weight: 700; }
 .reportes-negativo { color: #c0392b !important; font-weight: 700; }
 
+/* Resultados que se muestran debajo del listado (máximo, mínimo, promedio, total, conteo) */
+.reportes-resumen {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.reportes-resumen-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid #ddd;
+  border-left: 5px solid #4c4fe0;
+  border-radius: 6px;
+  padding: 0.7rem 0.9rem;
+  break-inside: avoid;
+}
+
+.reportes-resumen-destacado { background: #f6f6fb; border-left-color: #1a1a1a; }
+
+.reportes-resumen-etiqueta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.reportes-resumen-valor { font-size: 1.35rem; color: #1a1a1a; }
+.reportes-resumen-detalle { font-size: 0.75rem; color: #777; }
+
 .reportes-pie {
   margin: 0.8rem 0 0;
   font-size: 0.8rem;
@@ -285,7 +318,7 @@
   .reportes-preview-header { flex-direction: column; align-items: stretch; }
 }
 
-/* ---------- Impresión / PDF ---------- */
+/* Impresión / PDF */
 /* La copia imprimible vive fuera de la aplicación y está oculta en pantalla */
 .reportes-print { display: none; }
 
@@ -321,4 +354,10 @@
   }
 
   body[data-imprimir="reporte"] .reportes-tabla tr { break-inside: avoid; }
+
+  body[data-imprimir="reporte"] .reportes-resumen-item,
+  body[data-imprimir="reporte"] .reportes-resumen-destacado {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }

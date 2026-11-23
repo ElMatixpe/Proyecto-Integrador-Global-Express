@@ -22,6 +22,9 @@ const ICONOS = {
   barras: <BarsIcon />,
   moneda: <CoinIcon />,
   lista: <FileIcon color="#0f766e" size={22} />,
+  minmax: <BarsIcon color="#1a73e8" size={22} />,
+  cancelada: <FileIcon color="#c0392b" size={22} />,
+  ingresos: <CoinIcon color="#188038" size={22} />,
 };
 
 // Variaciones: "+13.89%" en verde, "-4.10%" en rojo
@@ -59,7 +62,7 @@ function Reportes({ usuario }) {
 
   useEffect(() => {
     if (errorPeriodo) return undefined;
-    let vigente = true; // evita que una respuesta vieja pise a una más reciente
+    let vigente = true; 
     setCargando(true);
     setErrorCarga('');
     const { inicio, fin } = rangoConsulta(desde, hasta);
@@ -214,8 +217,42 @@ function Reportes({ usuario }) {
         </table>
       </div>
 
+      {reporte.resumen && (
+        <div className="reportes-resumen">
+          {reporte.resumen.map((item) => (
+            <div
+              key={item.etiqueta}
+              className={`reportes-resumen-item${item.destacado ? ' reportes-resumen-destacado' : ''}`}
+            >
+              <span className="reportes-resumen-etiqueta">{item.etiqueta}</span>
+              <strong className="reportes-resumen-valor">{item.valor}</strong>
+              {item.detalle && <span className="reportes-resumen-detalle">{item.detalle}</span>}
+            </div>
+          ))}
+        </div>
+      )}
+
       {reporte.pie && <p className="reportes-pie">{reporte.pie}</p>}
       {reporte.hayMesParcial && reporte.nota && <p className="reportes-nota">{reporte.nota}</p>}
+    </div>
+  );
+
+  // Tarjetas de un tipo: "indicador" (fórmulas por mes) o "reporte" (listados de ventas)
+  const tarjetasDe = (tipo) => (
+    <div className="reportes-grid">
+      {INDICADORES.filter((ind) => ind.tipo === tipo).map((ind) => (
+        <div
+          key={ind.id}
+          className={`reportes-card${ind.id === indicadorActivo ? ' reportes-card-activa' : ''}`}
+        >
+          <div className={`reportes-card-icono reportes-icono-${ind.color}`}>{ICONOS[ind.icono]}</div>
+          <h3 className="reportes-card-titulo">{ind.titulo}</h3>
+          <p className="reportes-card-desc">{ind.descripcion}</p>
+          <button className="reportes-btn" type="button" onClick={() => generar(ind.id)}>
+            Generar PDF
+          </button>
+        </div>
+      ))}
     </div>
   );
 
@@ -281,24 +318,10 @@ function Reportes({ usuario }) {
       </div>
 
       <h3 className="reportes-seccion">Indicadores</h3>
+      {tarjetasDe('indicador')}
 
-      <div className="reportes-grid">
-        {INDICADORES.map((ind) => (
-          <div
-            key={ind.id}
-            className={`reportes-card${ind.id === indicadorActivo ? ' reportes-card-activa' : ''}`}
-          >
-            <div className={`reportes-card-icono reportes-icono-${ind.color}`}>
-              {ICONOS[ind.icono]}
-            </div>
-            <h3 className="reportes-card-titulo">{ind.titulo}</h3>
-            <p className="reportes-card-desc">{ind.descripcion}</p>
-            <button className="reportes-btn" type="button" onClick={() => generar(ind.id)}>
-              Generar PDF
-            </button>
-          </div>
-        ))}
-      </div>
+      <h3 className="reportes-seccion">Reportes de ventas</h3>
+      {tarjetasDe('reporte')}
 
       <section className="reportes-preview" ref={vistaPrevia}>
         <div className="reportes-preview-header">
